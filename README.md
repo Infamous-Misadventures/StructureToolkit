@@ -1,7 +1,7 @@
 # Structure Toolkit
 Always felt Minecraft structures feel a bit samey? Don't have enough tools in vanilla to make them look good?
 
-Introducing Structure Toolkit, or IYS in short.
+Introducing Structure Toolkit.
 
 # Overview
 This mod can fix your Minecraft world. Capable of turning any structure into a masterpiece by introducing just a couple structure processors.
