@@ -21,23 +21,6 @@ Much of the code in this mod was either written or inspired by him. Be sure to c
 [Repurposed Structures](https://www.curseforge.com/minecraft/mc-mods/repurposed-structures)
 
 # Content
-Following Structure Processors are included. Visit the wiki for actual usage details.
+There are many processors added, all with varying usecases, like adding retaining air, adding cobwebs, or updating item frames.
 
-## Replacers
-- [Air Retainer](doc/replacers.md#air-retainer)
-- [Block Mossify](doc/replacers.md#block-mossify)
-- [Gradient Replace](doc/replacers.md#gradient-replace)
-- [Spawner Randomizer](doc/replacers.md#spawner-randomizer)
-
-## Adders
-- [Ceiling Attachment](doc/adders.md#ceiling-attachment)
-- [Lily Pads](doc/adders.md#lily-pads)
-- [Mushrooms](doc/adders.md#mushrooms)
-- [Snow](doc/adders.md#snow)
-- [Vines](doc/adders.md#vines)
-
-## Decorators
-- [Flower Pots](doc/decorators.md#flower-pots)
-
-## Utility
-- [Waterlogging Fix](doc/utility.md#waterlogging-fix)
+For an in depth look, [visit the wiki](https://github.com/Patrigan/StructureToolkit/wiki).
