@@ -7,7 +7,8 @@ import net.minecraft.item.DyeColor;
 public enum RandomType {
     BLOCK,
     PIECE,
-    STRUCTURE;
+    STRUCTURE,
+    WORLD;
 
     public static final Codec<RandomType> RANDOM_TYPE_CODEC = Codec.STRING.flatComapMap(s -> RandomType.byName(s, null), d -> DataResult.success(d.name()));
 

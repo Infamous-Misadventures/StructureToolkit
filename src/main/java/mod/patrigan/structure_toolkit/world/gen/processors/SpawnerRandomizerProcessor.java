@@ -66,7 +66,7 @@ public class SpawnerRandomizerProcessor extends StructureProcessor {
     @Override
     public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
         if (blockInfo.state.getBlock() instanceof SpawnerBlock) {
-            Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, SEED);
+            Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
             return new Template.BlockInfo(
                     blockInfo.pos,
                     blockInfo.state,

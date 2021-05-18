@@ -49,13 +49,13 @@ public class MushroomProcessor extends StructureProcessor {
 
     @Override
     public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
-        Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, SEED);
+        Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
         if(blockstate.getBlock().equals(AIR) && random.nextFloat() <= rarity){
             List<Template.BlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
             if(isFaceFull(getBlock(pieceBlocks, rawBlockInfo.pos.relative(DOWN)), UP)) {
-                Random mushroomRandom = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, SEED);
+                Random mushroomRandom = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
                 Block mushroom = getRandomBlockFromTag(MUSHROOMS, mushroomRandom, exclusionList);
                 return new Template.BlockInfo(blockpos, mushroom.defaultBlockState(), blockInfo.nbt);
             }

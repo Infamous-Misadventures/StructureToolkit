@@ -32,7 +32,7 @@ public class ModProcessors {
         // Replacers
         AIR_RETAINER = register("air_retainer", AirRetainerProcessor.CODEC);
         BLOCK_MOSSIFY = register("block_mossify", BlockMossifyProcessor.CODEC);
-        GRADIENT_SPOT_REPLACE = register("gradient_spot_replace", GradientReplaceProcessor.CODEC);
+        GRADIENT_SPOT_REPLACE = register("gradient_replace", GradientReplaceProcessor.CODEC);
         SPAWNER_RANDOMIZER_PROCESSOR = register("spawner_randomizer", SpawnerRandomizerProcessor.CODEC);
         // Adders
         CEILING_ATTACHMENT = register("ceiling_attachment", CeilingAttachmentProcessor.CODEC);

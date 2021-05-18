@@ -1,5 +1,6 @@
 package mod.patrigan.structure_toolkit.world.gen.processors;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.util.OpenSimplex2F;
@@ -24,19 +25,17 @@ import static net.minecraftforge.registries.ForgeRegistries.BLOCKS;
 public class GradientReplaceProcessor extends StructureProcessor {
     public static final Codec<GradientReplaceProcessor> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
-                    Codec.FLOAT.fieldOf("rarity").forGetter(processor -> processor.rarity),
-                    ResourceLocation.CODEC.listOf().fieldOf("gradient_list").forGetter(data -> data.gradientList),
+                    Codec.mapPair(ResourceLocation.CODEC.fieldOf("resource_location"), Codec.floatRange(0, 1).fieldOf("step_size")).codec().listOf().fieldOf("gradient_list").forGetter(processor -> processor.gradientList),
                     ResourceLocation.CODEC.fieldOf("to_replace").forGetter(data -> data.toReplace)
             ).apply(builder, GradientReplaceProcessor::new));
-    private final float rarity;
-    private final List<ResourceLocation> gradientList;
+
+    private final List<Pair<ResourceLocation, Float>> gradientList;
     private final ResourceLocation toReplace;
 
     protected long seed;
     protected static OpenSimplex2F noiseGen;
 
-    public GradientReplaceProcessor(float rarity, List<ResourceLocation> gradientList, ResourceLocation toReplace) {
-        this.rarity = rarity;
+    public GradientReplaceProcessor(List<Pair<ResourceLocation, Float>> gradientList, ResourceLocation toReplace) {
         this.gradientList = gradientList;
         this.toReplace = toReplace;
     }
@@ -77,13 +76,11 @@ public class GradientReplaceProcessor extends StructureProcessor {
 
     private ResourceLocation getReplacementBlockResourceLocation(BlockPos blockPos) {
         double noiseValue = (noiseGen.noise3_Classic(blockPos.getX() * 0.075D, blockPos.getY() * 0.075D, blockPos.getZ() * 0.075D));
-        //double stepSize = (1D / (gradientList.size() + 1))*rarity;
-        double stepSize = 0.1;
-        for (ResourceLocation resourceLocation : gradientList) {
-            int index = gradientList.indexOf(resourceLocation);
-            double bound = (index + 1) * stepSize;
-            if(noiseValue < bound && noiseValue > (bound * -1)) {
-                return resourceLocation;
+        float stepSize = 0;
+        for(Pair<ResourceLocation, Float> pair: gradientList){
+            stepSize = stepSize+pair.getSecond();
+            if (noiseValue < stepSize && noiseValue > (stepSize * -1)) {
+                return pair.getFirst();
             }
         }
         return toReplace;

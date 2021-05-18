@@ -49,14 +49,14 @@ public class SnowProcessor extends StructureProcessor {
 
     @Override
     public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
-        Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, SEED);
+        Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
         if(blockstate.getBlock().equals(AIR) && random.nextFloat() <= rarity){
             List<Template.BlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
             if(isFaceFull(getBlock(pieceBlocks, rawBlockInfo.pos.relative(DOWN)), UP)) {
                 Block snow = Blocks.SNOW;
-                Random pieceRandom = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, SEED);
+                Random pieceRandom = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
                 BlockState blockState = snow.defaultBlockState().setValue(LAYERS, pieceRandom.nextInt(maxHeight) + 1);
                 return new Template.BlockInfo(blockpos, blockState, blockInfo.nbt);
             }

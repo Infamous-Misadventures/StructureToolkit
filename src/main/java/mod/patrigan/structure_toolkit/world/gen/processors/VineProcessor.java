@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 import static mod.patrigan.structure_toolkit.init.ModProcessors.VINES;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
-import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.getRandom;
 import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.*;
 import static net.minecraft.block.Blocks.AIR;
 import static net.minecraft.block.Blocks.VINE;
@@ -52,7 +51,7 @@ public class VineProcessor extends StructureProcessor {
 
     @Override
     public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
-        Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, SEED);
+        Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
         List<Direction> possibleDirections = new ArrayList<>();

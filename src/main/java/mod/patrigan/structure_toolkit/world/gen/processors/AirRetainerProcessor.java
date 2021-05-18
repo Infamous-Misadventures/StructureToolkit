@@ -40,7 +40,7 @@ public class AirRetainerProcessor extends StructureProcessor {
 
     @Override
     public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
-        Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, SEED);
+        Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         if(world.isEmptyBlock(blockInfo.pos) && random.nextFloat() < rarity && (toReplace.isEmpty() || toReplace.contains(blockInfo.state.getBlock().getRegistryName()))){
             BlockState blockState = world.getBlockState(blockInfo.pos);
             return new Template.BlockInfo(blockInfo.pos, blockState, null);
