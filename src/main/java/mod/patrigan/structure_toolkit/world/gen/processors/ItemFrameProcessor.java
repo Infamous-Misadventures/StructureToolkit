@@ -32,23 +32,21 @@ public class ItemFrameProcessor extends StructureProcessor {
     public static final Codec<ItemFrameProcessor> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     Codec.BOOL.optionalFieldOf("invisible", false).forGetter(processor -> processor.invisible),
-                    iTagCodec(() -> TagCollectionManager.getInstance().getItems()).optionalFieldOf("item_tag", null).forGetter(data -> data.itemTag),
-                    iTagCodec(() -> TagCollectionManager.getInstance().getBlocks()).optionalFieldOf("block_tag", null).forGetter(data -> data.blockTag),
+                    ITag.codec(() -> TagCollectionManager.getInstance().getItems()).fieldOf("item_tag").forGetter(data -> data.itemTag),
                     ResourceLocation.CODEC.listOf().optionalFieldOf("exclusion_list", emptyList()).forGetter(data -> data.exclusionList),
                     RANDOM_TYPE_CODEC.optionalFieldOf("random_type", RandomType.BLOCK).forGetter(processor -> processor.randomType)
             ).apply(builder, ItemFrameProcessor::new));
 
     private static final long SEED = 5132791L;
+
     private final boolean invisible;
     private ITag<Item> itemTag;
-    private ITag<Block> blockTag;
     private final List<ResourceLocation> exclusionList;
     private final RandomType randomType;
 
-    public ItemFrameProcessor(boolean invisible, ITag<Item> itemTag, ITag<Block> blockTag, List<ResourceLocation> exclusionList, RandomType randomType) {
+    public ItemFrameProcessor(boolean invisible, ITag<Item> itemTag, List<ResourceLocation> exclusionList, RandomType randomType) {
         this.invisible = invisible;
         this.itemTag = itemTag;
-        this.blockTag = blockTag;
         this.exclusionList = exclusionList;
         this.randomType = randomType;
     }
@@ -59,13 +57,10 @@ public class ItemFrameProcessor extends StructureProcessor {
         Vector3d pos = entityInfo.pos;
         BlockPos blockPos = entityInfo.blockPos;
         CompoundNBT nbt = entityInfo.nbt;
-        if(itemTag == null && blockTag == null){
-            return entityInfo;
-        }
         StructureToolkit.LOGGER.info(nbt.getString("id") + " equals " + EntityType.ITEM_FRAME.getRegistryName().toString());
         if(nbt.getString("id").equals(EntityType.ITEM_FRAME.getRegistryName().toString())){
             StructureToolkit.LOGGER.info("Starting");
-            Item randomItemFromTag = itemTag != null ? getRandomItemFromTag(itemTag, random, exclusionList) : getRandomBlockFromTag(blockTag, random, exclusionList).asItem();
+            Item randomItemFromTag = getRandomItemFromTag(itemTag, random, exclusionList);
             nbt.put("Item", new ItemStack(randomItemFromTag).save(new CompoundNBT()));
             nbt.putBoolean("Invisible", invisible);
             return new Template.EntityInfo(pos, blockPos, nbt);
