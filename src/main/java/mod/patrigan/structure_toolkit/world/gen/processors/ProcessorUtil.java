@@ -2,6 +2,7 @@ package mod.patrigan.structure_toolkit.world.gen.processors;
 
 import mod.patrigan.structure_toolkit.util.RandomType;
 import net.minecraft.block.*;
+import net.minecraft.item.Item;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -41,9 +42,14 @@ public class ProcessorUtil {
         return pos == null ? Util.getMillis() + processorSeed : MathHelper.getSeed(pos) + processorSeed;
     }
 
-    public static Block getRandomBlockFromTag(ITag<Block> tag, Random random, List<ResourceLocation> blackList){
-        List<Block> whiteList = tag.getValues().stream().filter(block -> !blackList.contains(block.getRegistryName())).collect(Collectors.toList());
-        return whiteList.get(random.nextInt(whiteList.size()));
+    public static Block getRandomBlockFromTag(ITag<Block> tag, Random random, List<ResourceLocation> exclusionList){
+        List<Block> resultList = tag.getValues().stream().filter(block -> !exclusionList.contains(block.getRegistryName())).collect(Collectors.toList());
+        return resultList.get(random.nextInt(resultList.size()));
+    }
+
+    public static Item getRandomItemFromTag(ITag<Item> tag, Random random, List<ResourceLocation> exclusionList){
+        List<Item> resultList = tag.getValues().stream().filter(item -> !exclusionList.contains(item.getRegistryName())).collect(Collectors.toList());
+        return resultList.get(random.nextInt(resultList.size()));
     }
 
 

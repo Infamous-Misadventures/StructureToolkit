@@ -23,6 +23,7 @@ public class ModProcessors {
     public static IStructureProcessorType<VineProcessor> VINES;
     // Decorators
     public static IStructureProcessorType<FlowerPotsProcessor> FLOWER_POTS;
+    public static IStructureProcessorType<ItemFrameProcessor> ITEM_FRAMES;
     // Util
     public static IStructureProcessorType<WaterloggingFixProcessor> WATERLOGGING_FIX_PROCESSOR;
     public static IStructureProcessorType<WaterflowFixProcessor> WATERFLOW_FIX_PROCESSOR;
@@ -42,6 +43,7 @@ public class ModProcessors {
         VINES = register("vines", VineProcessor.CODEC);
         // Decorators
         FLOWER_POTS = register("flower_pots", FlowerPotsProcessor.CODEC);
+        ITEM_FRAMES = register("item_frames", ItemFrameProcessor.CODEC);
         // Util
         WATERLOGGING_FIX_PROCESSOR = register("waterlogging_fix", WaterloggingFixProcessor.CODEC);
         WATERFLOW_FIX_PROCESSOR = register("waterflow_fix", WaterflowFixProcessor.CODEC);
