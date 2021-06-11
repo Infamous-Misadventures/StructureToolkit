@@ -24,21 +24,21 @@ import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
 import static net.minecraft.block.Blocks.FLOWER_POT;
 import static net.minecraft.tags.BlockTags.*;
 
-public class FlowerPotsProcessor extends StructureProcessor {
-    public static final Codec<FlowerPotsProcessor> CODEC = RecordCodecBuilder.create(builder ->
+public class FlowerPotProcessor extends StructureProcessor {
+    public static final Codec<FlowerPotProcessor> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     Codec.BOOL.optionalFieldOf("include_saplings", true).forGetter(processor -> processor.includeSaplings),
                     Codec.BOOL.optionalFieldOf("include_flowers", true).forGetter(processor -> processor.includeFlowers),
                     ResourceLocation.CODEC.listOf().optionalFieldOf("exclusion_list", emptyList()).forGetter(data -> data.exclusionList),
                     RANDOM_TYPE_CODEC.optionalFieldOf("random_type", RandomType.BLOCK).forGetter(processor -> processor.randomType)
-            ).apply(builder, FlowerPotsProcessor::new));
+            ).apply(builder, FlowerPotProcessor::new));
     private static final long SEED = 9348841L;
     private final boolean includeSaplings;
     private final boolean includeFlowers;
     private final List<ResourceLocation> exclusionList;
     private final RandomType randomType;
 
-    public FlowerPotsProcessor(boolean includeSaplings, boolean includeFlowers, List<ResourceLocation> exclusionList, RandomType randomType) {
+    public FlowerPotProcessor(boolean includeSaplings, boolean includeFlowers, List<ResourceLocation> exclusionList, RandomType randomType) {
         this.includeSaplings = includeSaplings;
         this.includeFlowers = includeFlowers;
         this.exclusionList = exclusionList;

@@ -15,8 +15,15 @@ public class ModTags {
 
     public static class Items {
 
+        public static final ITag.INamedTag<Item> IRON_ARMOR = forgeTag("armor/iron");
+        public static final ITag.INamedTag<Item> IRON_WEAPONS = forgeTag("weapons/iron");
+        public static final ITag.INamedTag<Item> IRON_TOOLS = forgeTag("tools/iron");
+
         private static ITag.INamedTag<Item> tag(String id) {
             return ItemTags.bind(StructureToolkit.MOD_ID + ":" + id);
+        }
+        private static ITag.INamedTag<Item> forgeTag(String id) {
+            return ItemTags.createOptional(new ResourceLocation(ForgeVersion.MOD_ID + ":" + id));
         }
     }
 

@@ -2,52 +2,47 @@ package mod.patrigan.structure_toolkit.world.gen.processors;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import mod.patrigan.structure_toolkit.StructureToolkit;
 import mod.patrigan.structure_toolkit.init.ModProcessors;
+import mod.patrigan.structure_toolkit.util.GeneralUtils;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.*;
+import net.minecraft.world.gen.feature.template.IStructureProcessorType;
+import net.minecraft.world.gen.feature.template.PlacementSettings;
+import net.minecraft.world.gen.feature.template.StructureProcessor;
+import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.server.ServerWorld;
 
-import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
-import static mod.patrigan.structure_toolkit.util.Codecs.iTagCodec;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
-import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.getRandomBlockFromTag;
-import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.getRandomItemFromTag;
 
 public class ItemFrameProcessor extends StructureProcessor {
     public static final Codec<ItemFrameProcessor> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     Codec.BOOL.optionalFieldOf("invisible", false).forGetter(processor -> processor.invisible),
-                    ITag.codec(() -> TagCollectionManager.getInstance().getItems()).fieldOf("item_tag").forGetter(data -> data.itemTag),
-                    ResourceLocation.CODEC.listOf().optionalFieldOf("exclusion_list", emptyList()).forGetter(data -> data.exclusionList),
+                    Codec.BOOL.optionalFieldOf("random_rotation", false).forGetter(processor -> processor.randomRotation),
+                    ResourceLocation.CODEC.optionalFieldOf("loot_table", new ResourceLocation("structure_toolkit:empty")).forGetter(data -> data.lootTable),
                     RANDOM_TYPE_CODEC.optionalFieldOf("random_type", RandomType.BLOCK).forGetter(processor -> processor.randomType)
             ).apply(builder, ItemFrameProcessor::new));
 
     private static final long SEED = 5132791L;
 
     private final boolean invisible;
-    private ITag<Item> itemTag;
-    private final List<ResourceLocation> exclusionList;
+    private final boolean randomRotation;
+    private ResourceLocation lootTable;
     private final RandomType randomType;
 
-    public ItemFrameProcessor(boolean invisible, ITag<Item> itemTag, List<ResourceLocation> exclusionList, RandomType randomType) {
+    public ItemFrameProcessor(boolean invisible, boolean randomRotation, ResourceLocation lootTable, RandomType randomType) {
         this.invisible = invisible;
-        this.itemTag = itemTag;
-        this.exclusionList = exclusionList;
+        this.randomRotation = randomRotation;
+        this.lootTable = lootTable;
         this.randomType = randomType;
     }
 
@@ -57,20 +52,21 @@ public class ItemFrameProcessor extends StructureProcessor {
         Vector3d pos = entityInfo.pos;
         BlockPos blockPos = entityInfo.blockPos;
         CompoundNBT nbt = entityInfo.nbt;
-        StructureToolkit.LOGGER.info(nbt.getString("id") + " equals " + EntityType.ITEM_FRAME.getRegistryName().toString());
         if(nbt.getString("id").equals(EntityType.ITEM_FRAME.getRegistryName().toString())){
-            StructureToolkit.LOGGER.info("Starting");
-            Item randomItemFromTag = getRandomItemFromTag(itemTag, random, exclusionList);
-            nbt.put("Item", new ItemStack(randomItemFromTag).save(new CompoundNBT()));
+            ItemStack itemStack = getItemStack(random, world, blockPos);
+            nbt.put("Item", itemStack.save(new CompoundNBT()));
             nbt.putBoolean("Invisible", invisible);
+            if(randomRotation){
+                nbt.putByte("ItemRotation", (byte)random.nextInt(8));
+            }
             return new Template.EntityInfo(pos, blockPos, nbt);
         }
-        StructureToolkit.LOGGER.info(nbt.toString());
         return entityInfo;
     }
 
-    private boolean objectFilter(Item item) {
-        return !exclusionList.contains(item.getRegistryName());
+    private ItemStack getItemStack(Random random, IWorldReader world, BlockPos blockPos) {
+        ServerWorld serverWorld = ((IServerWorld)world).getLevel();
+        return GeneralUtils.generateItemStack(serverWorld, blockPos, lootTable, random);
     }
 
     protected IStructureProcessorType<?> getType() {

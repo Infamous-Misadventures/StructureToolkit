@@ -1,0 +1,67 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "weight": 80,
+          "name": "forge:armor/iron",
+          "expand": true
+        },
+        {
+          "type": "minecraft:tag",
+          "weight": 80,
+          "name": "forge:tools/iron",
+          "expand": true
+        },
+        {
+          "type": "minecraft:tag",
+          "weight": 80,
+          "name": "forge:weapons/iron",
+          "expand": true
+        },
+        {
+          "type": "minecraft:tag",
+          "weight": 20,
+          "functions": [
+            {
+              "function": "minecraft:enchant_with_levels",
+              "levels": 30,
+              "treasure": true
+            }
+          ],
+          "name": "forge:armor/iron",
+          "expand": true
+        },
+        {
+          "type": "minecraft:tag",
+          "weight": 20,
+          "functions": [
+            {
+              "function": "minecraft:enchant_with_levels",
+              "levels": 30,
+              "treasure": true
+            }
+          ],
+          "name": "forge:tools/iron",
+          "expand": true
+        },
+        {
+          "type": "minecraft:tag",
+          "weight": 20,
+          "functions": [
+            {
+              "function": "minecraft:enchant_with_levels",
+              "levels": 30,
+              "treasure": true
+            }
+          ],
+          "name": "forge:weapons/iron",
+          "expand": true
+        }
+      ]
+    }
+  ]
+}
