@@ -23,6 +23,7 @@ public class ModProcessors {
     public static IStructureProcessorType<VineProcessor> VINES;
     // Decorators
     public static IStructureProcessorType<FlowerPotProcessor> FLOWER_POTS;
+    public static IStructureProcessorType<FurnaceProcessor> FURNACES;
     public static IStructureProcessorType<ItemFrameProcessor> ITEM_FRAMES;
     public static IStructureProcessorType<ArmorStandProcessor> ARMOR_STANDS;
     // Util
@@ -44,6 +45,7 @@ public class ModProcessors {
         VINES = register("vines", VineProcessor.CODEC);
         // Decorators
         FLOWER_POTS = register("flower_pots", FlowerPotProcessor.CODEC);
+        FURNACES = register("furnaces", FurnaceProcessor.CODEC);
         ITEM_FRAMES = register("item_frames", ItemFrameProcessor.CODEC);
         ARMOR_STANDS = register("armor_stands", ArmorStandProcessor.CODEC);
         // Util

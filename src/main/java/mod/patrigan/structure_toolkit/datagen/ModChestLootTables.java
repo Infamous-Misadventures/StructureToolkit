@@ -9,6 +9,7 @@ import net.minecraft.loot.functions.EnchantWithLevels;
 import net.minecraft.loot.functions.SetCount;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.Tags;
 
 import java.util.function.BiConsumer;
 
@@ -24,7 +25,7 @@ public class ModChestLootTables extends ChestLootTables {
                 LootTable.lootTable());
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/iron_equipment"),
                 LootTable.lootTable().
-                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(1.0F, 1.0F))
+                        withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1))
                                 .add(TagLootEntry.expandTag(ModTags.Items.IRON_ARMOR).setWeight(80))
                                 .add(TagLootEntry.expandTag(ModTags.Items.IRON_TOOLS).setWeight(80))
                                 .add(TagLootEntry.expandTag(ModTags.Items.IRON_WEAPONS).setWeight(80))
@@ -33,7 +34,7 @@ public class ModChestLootTables extends ChestLootTables {
                                 .add(TagLootEntry.expandTag(ModTags.Items.IRON_WEAPONS).setWeight(20).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))));
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/helmets"),
                 LootTable.lootTable().
-                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 2.0F))
+                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 1.0F))
                                 .add(ItemLootEntry.lootTableItem(Items.CHAINMAIL_HELMET).setWeight(40))
                                 .add(ItemLootEntry.lootTableItem(Items.IRON_HELMET).setWeight(80))
                                 .add(ItemLootEntry.lootTableItem(Items.GOLDEN_HELMET).setWeight(40))
@@ -44,7 +45,7 @@ public class ModChestLootTables extends ChestLootTables {
                                 .add(ItemLootEntry.lootTableItem(Items.DIAMOND_HELMET).setWeight(5).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))));
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/chestplates"),
                 LootTable.lootTable().
-                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 2.0F))
+                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 1.0F))
                                 .add(ItemLootEntry.lootTableItem(Items.CHAINMAIL_CHESTPLATE).setWeight(40))
                                 .add(ItemLootEntry.lootTableItem(Items.IRON_CHESTPLATE).setWeight(80))
                                 .add(ItemLootEntry.lootTableItem(Items.GOLDEN_CHESTPLATE).setWeight(40))
@@ -55,7 +56,7 @@ public class ModChestLootTables extends ChestLootTables {
                                 .add(ItemLootEntry.lootTableItem(Items.DIAMOND_CHESTPLATE).setWeight(5).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))));
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/leggings"),
                 LootTable.lootTable().
-                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 2.0F))
+                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 1.0F))
                                 .add(ItemLootEntry.lootTableItem(Items.CHAINMAIL_LEGGINGS).setWeight(40))
                                 .add(ItemLootEntry.lootTableItem(Items.IRON_LEGGINGS).setWeight(80))
                                 .add(ItemLootEntry.lootTableItem(Items.GOLDEN_LEGGINGS).setWeight(40))
@@ -66,7 +67,7 @@ public class ModChestLootTables extends ChestLootTables {
                                 .add(ItemLootEntry.lootTableItem(Items.DIAMOND_LEGGINGS).setWeight(5).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))));
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/boots"),
                 LootTable.lootTable().
-                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 2.0F))
+                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 1.0F))
                                 .add(ItemLootEntry.lootTableItem(Items.CHAINMAIL_BOOTS).setWeight(40))
                                 .add(ItemLootEntry.lootTableItem(Items.IRON_BOOTS).setWeight(80))
                                 .add(ItemLootEntry.lootTableItem(Items.GOLDEN_BOOTS).setWeight(40))
@@ -75,5 +76,17 @@ public class ModChestLootTables extends ChestLootTables {
                                 .add(ItemLootEntry.lootTableItem(Items.IRON_BOOTS).setWeight(20).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))
                                 .add(ItemLootEntry.lootTableItem(Items.GOLDEN_BOOTS).setWeight(10).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))
                                 .add(ItemLootEntry.lootTableItem(Items.DIAMOND_BOOTS).setWeight(5).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))));
+        consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/fuel"),
+                LootTable.lootTable().
+                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 1.0F))
+                                .add(ItemLootEntry.lootTableItem(Items.COAL).setWeight(40)).apply(SetCount.setCount(RandomValueRange.between(1.0F, 10.0F)))));
+        consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/ore"),
+                LootTable.lootTable().
+                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 1.0F))
+                                .add(TagLootEntry.expandTag(Tags.Items.ORES).setWeight(40)).apply(SetCount.setCount(RandomValueRange.between(1.0F, 3.0F)))));
+        consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/ingots"),
+                LootTable.lootTable().
+                        withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 1.0F))
+                                .add(TagLootEntry.expandTag(Tags.Items.INGOTS).setWeight(40)).apply(SetCount.setCount(RandomValueRange.between(1.0F, 3.0F)))));
     }
 }
