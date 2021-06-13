@@ -22,10 +22,11 @@ public class ModProcessors {
     public static IStructureProcessorType<SnowProcessor> SNOW;
     public static IStructureProcessorType<VineProcessor> VINES;
     // Decorators
+    public static IStructureProcessorType<ArmorStandProcessor> ARMOR_STANDS;
     public static IStructureProcessorType<FlowerPotProcessor> FLOWER_POTS;
     public static IStructureProcessorType<FurnaceProcessor> FURNACES;
     public static IStructureProcessorType<ItemFrameProcessor> ITEM_FRAMES;
-    public static IStructureProcessorType<ArmorStandProcessor> ARMOR_STANDS;
+    public static IStructureProcessorType<LecternProcessor> LECTERNS;
     // Util
     public static IStructureProcessorType<WaterloggingFixProcessor> WATERLOGGING_FIX_PROCESSOR;
     public static IStructureProcessorType<WaterflowFixProcessor> WATERFLOW_FIX_PROCESSOR;
@@ -44,10 +45,11 @@ public class ModProcessors {
         SNOW = register("snow", SnowProcessor.CODEC);
         VINES = register("vines", VineProcessor.CODEC);
         // Decorators
+        ARMOR_STANDS = register("armor_stands", ArmorStandProcessor.CODEC);
         FLOWER_POTS = register("flower_pots", FlowerPotProcessor.CODEC);
         FURNACES = register("furnaces", FurnaceProcessor.CODEC);
         ITEM_FRAMES = register("item_frames", ItemFrameProcessor.CODEC);
-        ARMOR_STANDS = register("armor_stands", ArmorStandProcessor.CODEC);
+        LECTERNS = register("lecterns", LecternProcessor.CODEC);
         // Util
         WATERLOGGING_FIX_PROCESSOR = register("waterlogging_fix", WaterloggingFixProcessor.CODEC);
         WATERFLOW_FIX_PROCESSOR = register("waterflow_fix", WaterflowFixProcessor.CODEC);
