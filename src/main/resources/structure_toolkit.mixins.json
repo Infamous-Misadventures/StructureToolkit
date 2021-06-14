@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "mod.patrigan.structure_toolkit.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "structure_toolkit.refmap.json",
+  "mixins": [
+    "AbstractVillagePieceMixin"
+  ],
+  "client":[
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
