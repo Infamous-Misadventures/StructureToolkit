@@ -29,7 +29,6 @@ public class ModProcessors {
     public static IStructureProcessorType<LecternProcessor> LECTERNS;
     // Util
     public static IStructureProcessorType<WaterloggingFixProcessor> WATERLOGGING_FIX_PROCESSOR;
-    public static IStructureProcessorType<WaterflowFixProcessor> WATERFLOW_FIX_PROCESSOR;
 
 
     public static void init(){
@@ -52,7 +51,6 @@ public class ModProcessors {
         LECTERNS = register("lecterns", LecternProcessor.CODEC);
         // Util
         WATERLOGGING_FIX_PROCESSOR = register("waterlogging_fix", WaterloggingFixProcessor.CODEC);
-        WATERFLOW_FIX_PROCESSOR = register("waterflow_fix", WaterflowFixProcessor.CODEC);
     }
 
     static <P extends StructureProcessor> IStructureProcessorType<P> register(String name, Codec<P> codec) {
