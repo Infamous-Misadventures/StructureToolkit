@@ -46,7 +46,7 @@ public class FurnaceProcessor extends StructureProcessor {
     private final ResourceLocation smeltableLootTable;
     private final ResourceLocation fuelLootTable;
     private final ResourceLocation resultLootTable;
-    public final RandomType randomType;
+    private final RandomType randomType;
 
     public FurnaceProcessor(ResourceLocation smeltableLootTable, ResourceLocation fuelLootTable, ResourceLocation resultLootTable, RandomType randomType) {
         this.smeltableLootTable = smeltableLootTable;

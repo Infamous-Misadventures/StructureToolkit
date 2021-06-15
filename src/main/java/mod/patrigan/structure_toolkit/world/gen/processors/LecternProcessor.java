@@ -41,7 +41,7 @@ public class LecternProcessor extends StructureProcessor {
     private static final long SEED = 678152L;
 
     private final ResourceLocation lootTable;
-    public final RandomType randomType;
+    private final RandomType randomType;
 
     public LecternProcessor(ResourceLocation lootTable, RandomType randomType) {
         this.lootTable = lootTable;

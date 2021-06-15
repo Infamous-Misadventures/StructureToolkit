@@ -49,7 +49,7 @@ public class SpawnerRandomizerProcessor extends StructureProcessor {
     public final Short maxNearbyEntities;
     public final Short requiredPlayerRange;
     public final Short spawnRange;
-    public final RandomType randomType;
+    private final RandomType randomType;
 
     public SpawnerRandomizerProcessor(List<Pair<EntityType<?>, Integer>> entityWeightMap, Short delay, Short minSpawnDelay, Short maxSpawnDelay, Short spawnCount, Short maxNearbyEntities, Short requiredPlayerRange, Short spawnRange, RandomType randomType) {
         this.entityWeightMap = entityWeightMap;

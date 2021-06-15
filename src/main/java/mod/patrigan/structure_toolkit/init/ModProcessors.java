@@ -27,6 +27,7 @@ public class ModProcessors {
     public static IStructureProcessorType<FurnaceProcessor> FURNACES;
     public static IStructureProcessorType<ItemFrameProcessor> ITEM_FRAMES;
     public static IStructureProcessorType<LecternProcessor> LECTERNS;
+    public static IStructureProcessorType<ChestProcessor> CHESTS;
     // Util
     public static IStructureProcessorType<WaterloggingFixProcessor> WATERLOGGING_FIX_PROCESSOR;
 
@@ -45,6 +46,7 @@ public class ModProcessors {
         VINES = register("vines", VineProcessor.CODEC);
         // Decorators
         ARMOR_STANDS = register("armor_stands", ArmorStandProcessor.CODEC);
+        CHESTS = register("chests", ChestProcessor.CODEC);
         FLOWER_POTS = register("flower_pots", FlowerPotProcessor.CODEC);
         FURNACES = register("furnaces", FurnaceProcessor.CODEC);
         ITEM_FRAMES = register("item_frames", ItemFrameProcessor.CODEC);
