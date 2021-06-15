@@ -4,7 +4,6 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "structure_toolkit.refmap.json",
   "mixins": [
-    "AbstractVillagePieceMixin"
   ],
   "client":[
   ],
