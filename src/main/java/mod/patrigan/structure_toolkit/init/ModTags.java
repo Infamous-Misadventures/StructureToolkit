@@ -24,6 +24,12 @@ public class ModTags {
         public static final ITag.INamedTag<Item> IRON_ARMOR = addArmorTag("iron"); ;
         public static final ITag.INamedTag<Item> IRON_WEAPONS = addWeaponsTag("iron");
         public static final ITag.INamedTag<Item> IRON_TOOLS = addToolsTag("iron");
+        public static final ITag.INamedTag<Item> GOLD_ARMOR = addArmorTag("gold"); ;
+        public static final ITag.INamedTag<Item> GOLD_WEAPONS = addWeaponsTag("gold");
+        public static final ITag.INamedTag<Item> GOLD_TOOLS = addToolsTag("gold");
+        public static final ITag.INamedTag<Item> DIAMOND_ARMOR = addArmorTag("diamond"); ;
+        public static final ITag.INamedTag<Item> DIAMOND_WEAPONS = addWeaponsTag("diamond");
+        public static final ITag.INamedTag<Item> DIAMOND_TOOLS = addToolsTag("diamond");
 
         private static ITag.INamedTag<Item> tag(String id) {
             return ItemTags.bind(StructureToolkit.MOD_ID + ":" + id);

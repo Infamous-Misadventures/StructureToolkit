@@ -1,0 +1,61 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "weight": 80,
+          "name": "structure_toolkit:processors/armors/gold"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 80,
+          "name": "structure_toolkit:processors/weapons/gold"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 80,
+          "name": "structure_toolkit:processors/tools/gold"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 20,
+          "functions": [
+            {
+              "function": "minecraft:enchant_with_levels",
+              "levels": 30,
+              "treasure": true
+            }
+          ],
+          "name": "structure_toolkit:processors/armors/gold"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 20,
+          "functions": [
+            {
+              "function": "minecraft:enchant_with_levels",
+              "levels": 30,
+              "treasure": true
+            }
+          ],
+          "name": "structure_toolkit:processors/weapons/gold"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 20,
+          "functions": [
+            {
+              "function": "minecraft:enchant_with_levels",
+              "levels": 30,
+              "treasure": true
+            }
+          ],
+          "name": "structure_toolkit:processors/tools/gold"
+        }
+      ]
+    }
+  ]
+}

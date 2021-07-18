@@ -24,6 +24,8 @@ public class ModChestLootTables extends ChestLootTables {
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "empty"),
                 LootTable.lootTable());
         equipmentLootTable(consumer, "iron");
+        equipmentLootTable(consumer, "gold");
+        equipmentLootTable(consumer, "diamond");
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/helmets"),
                 LootTable.lootTable().
                         withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 1.0F))
