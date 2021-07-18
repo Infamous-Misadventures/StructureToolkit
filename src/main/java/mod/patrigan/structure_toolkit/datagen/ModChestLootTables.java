@@ -23,15 +23,7 @@ public class ModChestLootTables extends ChestLootTables {
                                 .add(TagLootEntry.expandTag(ItemTags.SAPLINGS).setWeight(6).apply(SetCount.setCount(ConstantRange.exactly(1))))));
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "empty"),
                 LootTable.lootTable());
-        consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/iron_equipment"),
-                LootTable.lootTable().
-                        withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1))
-                                .add(TagLootEntry.expandTag(ModTags.Items.IRON_ARMOR).setWeight(80))
-                                .add(TagLootEntry.expandTag(ModTags.Items.IRON_TOOLS).setWeight(80))
-                                .add(TagLootEntry.expandTag(ModTags.Items.IRON_WEAPONS).setWeight(80))
-                                .add(TagLootEntry.expandTag(ModTags.Items.IRON_ARMOR).setWeight(20).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))
-                                .add(TagLootEntry.expandTag(ModTags.Items.IRON_TOOLS).setWeight(20).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))
-                                .add(TagLootEntry.expandTag(ModTags.Items.IRON_WEAPONS).setWeight(20).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))));
+        equipmentLootTable(consumer, "iron");
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/helmets"),
                 LootTable.lootTable().
                         withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 1.0F))
@@ -88,5 +80,32 @@ public class ModChestLootTables extends ChestLootTables {
                 LootTable.lootTable().
                         withPool(LootPool.lootPool().setRolls(RandomValueRange.between(0.0F, 1.0F))
                                 .add(TagLootEntry.expandTag(Tags.Items.INGOTS).setWeight(40)).apply(SetCount.setCount(RandomValueRange.between(1.0F, 3.0F)))));
+    }
+
+    private void equipmentLootTable(BiConsumer<ResourceLocation, LootTable.Builder> consumer, String material) {
+        ResourceLocation armorsLoc = new ResourceLocation(StructureToolkit.MOD_ID, "processors/armors/" + material);
+        consumer.accept(armorsLoc,
+                LootTable.lootTable().
+                        withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1))
+                                .add(TagLootEntry.expandTag(ModTags.Items.ARMORS.get(material)))));
+        ResourceLocation weaponsLoc = new ResourceLocation(StructureToolkit.MOD_ID, "processors/weapons/" + material);
+        consumer.accept(weaponsLoc,
+                LootTable.lootTable().
+                        withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1))
+                                .add(TagLootEntry.expandTag(ModTags.Items.ARMORS.get(material)))));
+        ResourceLocation toolsLoc = new ResourceLocation(StructureToolkit.MOD_ID, "processors/tools/" + material);
+        consumer.accept(toolsLoc,
+                LootTable.lootTable().
+                        withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1))
+                                .add(TagLootEntry.expandTag(ModTags.Items.ARMORS.get(material)))));
+        consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/equipment/"+material),
+                LootTable.lootTable().
+                        withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1))
+                                .add(TableLootEntry.lootTableReference(armorsLoc).setWeight(80))
+                                .add(TableLootEntry.lootTableReference(weaponsLoc).setWeight(80))
+                                .add(TableLootEntry.lootTableReference(toolsLoc).setWeight(80))
+                                .add(TableLootEntry.lootTableReference(armorsLoc).setWeight(20).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))
+                                .add(TableLootEntry.lootTableReference(weaponsLoc).setWeight(20).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))
+                                .add(TableLootEntry.lootTableReference(toolsLoc).setWeight(20).apply(EnchantWithLevels.enchantWithLevels(ConstantRange.exactly(30)).allowTreasure()))));
     }
 }

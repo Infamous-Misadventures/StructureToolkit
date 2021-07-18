@@ -1,6 +1,7 @@
 package mod.patrigan.structure_toolkit.world.gen.processors;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -16,6 +17,7 @@ import net.minecraft.world.gen.feature.template.StructureProcessor;
 import net.minecraft.world.gen.feature.template.Template;
 
 import static mod.patrigan.structure_toolkit.init.ModProcessors.WATERLOGGING_FIX_PROCESSOR;
+import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.getBlock;
 
 public class WaterloggingFixProcessor extends StructureProcessor {
 
@@ -38,15 +40,20 @@ public class WaterloggingFixProcessor extends StructureProcessor {
 
             // Remove water in adjacent blocks across chunk boundaries and above/below as well
             BlockPos.Mutable mutable = new BlockPos.Mutable();
+            BlockPos.Mutable mutableTemplate = new BlockPos.Mutable();
             for (Direction direction : Direction.values()) {
                 mutable.set(blockInfo.pos).move(direction);
+                mutableTemplate.set(rawBlockInfo.pos).move(direction);
                 if (currentChunkPos.x != mutable.getX() >> 4 || currentChunkPos.z != mutable.getZ() >> 4) {
                     currentChunk = world.getChunk(mutable);
                     currentChunkPos = new ChunkPos(mutable);
                 }
-
-                if (currentChunk.getFluidState(mutable).is(FluidTags.WATER)) {
-                    currentChunk.setBlockState(mutable, Blocks.STONE.defaultBlockState(), false);
+                BlockState chunkBlockState = currentChunk.getBlockState(mutable);
+                if (chunkBlockState.getFluidState().is(FluidTags.WATER)){
+                    Template.BlockInfo localBlockInfo = getBlock(settings.getRandomPalette(template.palettes, piecePos).blocks(), mutableTemplate);
+                    if(localBlockInfo == null || !localBlockInfo.state.getFluidState().is(FluidTags.WATER)) {
+                        currentChunk.setBlockState(mutable, Blocks.STONE.defaultBlockState(), false);
+                    }
                 }
             }
         }
