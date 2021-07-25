@@ -3,25 +3,23 @@ package mod.patrigan.structure_toolkit.world.gen.processors;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import static mod.patrigan.structure_toolkit.StructureToolkit.MOD_ID;
 import static mod.patrigan.structure_toolkit.init.ModProcessors.BLOCK_MOSSIFY;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
-import static net.minecraft.block.Blocks.AIR;
 import static net.minecraftforge.registries.ForgeRegistries.BLOCKS;
 
 public class BlockMossifyProcessor extends StructureProcessor {
@@ -41,31 +39,31 @@ public class BlockMossifyProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
+    public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
         Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
         BlockState blockstate1 = null;
         Block newBlock = BLOCKS.getValue(new ResourceLocation("mossy_" + blockstate.getBlock().getRegistryName().getPath()));
-        if(newBlock == null || newBlock.equals(AIR) ){
+        if(newBlock == null || newBlock.defaultBlockState().isAir() ){
             newBlock = BLOCKS.getValue(new ResourceLocation(MOD_ID, "mossy_" + blockstate.getBlock().getRegistryName().getPath()));
         }
-        if(newBlock != null && !newBlock.equals(AIR) && random.nextFloat() < mossiness){
-            if (newBlock.is(BlockTags.STAIRS)) {
+        if(newBlock != null && !newBlock.defaultBlockState().isAir() && random.nextFloat() < mossiness){
+            if (newBlock.getTags().contains(BlockTags.STAIRS.getName())) {
                 blockstate1 = ProcessorUtil.copyStairsState(blockstate, newBlock);
-            } else if (newBlock.is(BlockTags.SLABS)) {
+            } else if (newBlock.getTags().contains(BlockTags.SLABS.getName())) {
                 blockstate1 = ProcessorUtil.copySlabState(blockstate, newBlock);
-            } else if (newBlock.is(BlockTags.WALLS)) {
+            } else if (newBlock.getTags().contains(BlockTags.WALLS.getName())) {
                 blockstate1 = ProcessorUtil.copyWallState(blockstate, newBlock);
             }else if (blockstate.getBlock().equals(Blocks.COBBLESTONE) || blockstate.getBlock().equals(Blocks.STONE_BRICKS)){
                 blockstate1 = newBlock.defaultBlockState();
             }
         }
 
-        return blockstate1 != null ? new Template.BlockInfo(blockpos, blockstate1, blockInfo.nbt) : blockInfo;
+        return blockstate1 != null ? new StructureTemplate.StructureBlockInfo(blockpos, blockstate1, blockInfo.nbt) : blockInfo;
     }
 
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return BLOCK_MOSSIFY;
     }
 }

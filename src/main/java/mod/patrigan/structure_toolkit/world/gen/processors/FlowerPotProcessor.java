@@ -4,16 +4,16 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.init.ModProcessors;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowerPotBlock;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.List;
 import java.util.Random;
@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
-import static net.minecraft.block.Blocks.FLOWER_POT;
 import static net.minecraft.tags.BlockTags.*;
+import static net.minecraft.world.level.block.Blocks.FLOWER_POT;
 
 public class FlowerPotProcessor extends StructureProcessor {
     public static final Codec<FlowerPotProcessor> CODEC = RecordCodecBuilder.create(builder ->
@@ -46,13 +46,13 @@ public class FlowerPotProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
+    public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
         Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
         if(blockstate.getBlock().equals(FLOWER_POT)){
             List<Block> flowerPotList = FLOWER_POTS.getValues().stream().filter(this::flowerPotFilter).collect(Collectors.toList());
-            return new Template.BlockInfo(blockpos, flowerPotList.get(random.nextInt(flowerPotList.size())).defaultBlockState(), blockInfo.nbt);
+            return new StructureTemplate.StructureBlockInfo(blockpos, flowerPotList.get(random.nextInt(flowerPotList.size())).defaultBlockState(), blockInfo.nbt);
         }
         return blockInfo;
     }
@@ -63,10 +63,10 @@ public class FlowerPotProcessor extends StructureProcessor {
         }
         FlowerPotBlock flowerPotBlock = (FlowerPotBlock) block;
         Block content = flowerPotBlock.getContent();
-        if(includeSaplings && content.is(SAPLINGS) && !exclusionList.contains(content.getRegistryName())){
+        if(includeSaplings && content.getTags().contains(SAPLINGS.getName()) && !exclusionList.contains(content.getRegistryName())){
             return true;
         }
-        if(includeFlowers && content.is(FLOWERS) && !exclusionList.contains(content.getRegistryName())){
+        if(includeFlowers && content.getTags().contains(FLOWERS.getName()) && !exclusionList.contains(content.getRegistryName())){
             return true;
         }
         if(content.defaultBlockState().isAir() && !exclusionList.contains(content.getRegistryName())){
@@ -75,7 +75,7 @@ public class FlowerPotProcessor extends StructureProcessor {
         return false;
     }
 
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return ModProcessors.FLOWER_POTS;
     }
 }

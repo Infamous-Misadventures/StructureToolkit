@@ -2,11 +2,11 @@ package mod.patrigan.structure_toolkit.datagen;
 
 import mod.patrigan.structure_toolkit.StructureToolkit;
 import mod.patrigan.structure_toolkit.init.ModTags;
-import net.minecraft.data.BlockTagsProvider;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
-import static net.minecraft.block.Blocks.*;
+import static net.minecraft.world.level.block.Blocks.*;
 
 public class ModBlockTagsProvider extends BlockTagsProvider {
 

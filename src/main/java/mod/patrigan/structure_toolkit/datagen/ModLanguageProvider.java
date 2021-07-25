@@ -1,11 +1,11 @@
 package mod.patrigan.structure_toolkit.datagen;
 
 import mod.patrigan.structure_toolkit.StructureToolkit;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.data.LanguageProvider;
 
 import static mod.patrigan.structure_toolkit.init.ModBlocks.BLOCK_IDS;

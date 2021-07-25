@@ -2,34 +2,34 @@ package mod.patrigan.structure_toolkit.init;
 
 import com.mojang.serialization.Codec;
 import mod.patrigan.structure_toolkit.world.gen.processors.*;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 
 import static mod.patrigan.structure_toolkit.StructureToolkit.MOD_ID;
 
 public class ModProcessors {
     // Replacers
-    public static IStructureProcessorType<AirRetainerProcessor> AIR_RETAINER;
-    public static IStructureProcessorType<BlockMossifyProcessor> BLOCK_MOSSIFY;
-    public static IStructureProcessorType<GradientReplaceProcessor> GRADIENT_SPOT_REPLACE;
-    public static IStructureProcessorType<SpawnerRandomizerProcessor> SPAWNER_RANDOMIZER_PROCESSOR;
+    public static StructureProcessorType<AirRetainerProcessor> AIR_RETAINER;
+    public static StructureProcessorType<BlockMossifyProcessor> BLOCK_MOSSIFY;
+    public static StructureProcessorType<GradientReplaceProcessor> GRADIENT_SPOT_REPLACE;
+    public static StructureProcessorType<SpawnerRandomizerProcessor> SPAWNER_RANDOMIZER_PROCESSOR;
     // Adders
-    public static IStructureProcessorType<CeilingAttachmentProcessor> CEILING_ATTACHMENT;
-    public static IStructureProcessorType<LilyPadProcessor> LILY_PADS;
-    public static IStructureProcessorType<MushroomProcessor> MUSHROOMS;
-    public static IStructureProcessorType<SnowProcessor> SNOW;
-    public static IStructureProcessorType<VineProcessor> VINES;
+    public static StructureProcessorType<CeilingAttachmentProcessor> CEILING_ATTACHMENT;
+    public static StructureProcessorType<LilyPadProcessor> LILY_PADS;
+    public static StructureProcessorType<MushroomProcessor> MUSHROOMS;
+    public static StructureProcessorType<SnowProcessor> SNOW;
+    public static StructureProcessorType<VineProcessor> VINES;
     // Decorators
-    public static IStructureProcessorType<ArmorStandProcessor> ARMOR_STANDS;
-    public static IStructureProcessorType<FlowerPotProcessor> FLOWER_POTS;
-    public static IStructureProcessorType<FurnaceProcessor> FURNACES;
-    public static IStructureProcessorType<ItemFrameProcessor> ITEM_FRAMES;
-    public static IStructureProcessorType<LecternProcessor> LECTERNS;
-    public static IStructureProcessorType<ChestProcessor> CHESTS;
+    public static StructureProcessorType<ArmorStandProcessor> ARMOR_STANDS;
+    public static StructureProcessorType<FlowerPotProcessor> FLOWER_POTS;
+    public static StructureProcessorType<FurnaceProcessor> FURNACES;
+    public static StructureProcessorType<ItemFrameProcessor> ITEM_FRAMES;
+    public static StructureProcessorType<LecternProcessor> LECTERNS;
+    public static StructureProcessorType<ChestProcessor> CHESTS;
     // Util
-    public static IStructureProcessorType<WaterloggingFixProcessor> WATERLOGGING_FIX_PROCESSOR;
+    public static StructureProcessorType<WaterloggingFixProcessor> WATERLOGGING_FIX_PROCESSOR;
 
 
     public static void init(){
@@ -55,7 +55,7 @@ public class ModProcessors {
         WATERLOGGING_FIX_PROCESSOR = register("waterlogging_fix", WaterloggingFixProcessor.CODEC);
     }
 
-    static <P extends StructureProcessor> IStructureProcessorType<P> register(String name, Codec<P> codec) {
+    static <P extends StructureProcessor> StructureProcessorType<P> register(String name, Codec<P> codec) {
         return Registry.register(Registry.STRUCTURE_PROCESSOR, new ResourceLocation(MOD_ID, name), () -> {
             return codec;
         });
