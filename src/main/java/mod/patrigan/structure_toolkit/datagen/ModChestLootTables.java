@@ -31,7 +31,7 @@ public class ModChestLootTables extends ChestLoot {
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "empty"),
                 LootTable.lootTable());
         equipmentLootTable(consumer, "iron");
-        equipmentLootTable(consumer, "gold");
+        equipmentLootTable(consumer, "golden");
         equipmentLootTable(consumer, "diamond");
         consumer.accept(new ResourceLocation(StructureToolkit.MOD_ID, "processors/helmets"),
                 LootTable.lootTable().

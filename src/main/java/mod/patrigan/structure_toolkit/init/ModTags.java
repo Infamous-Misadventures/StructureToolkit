@@ -24,9 +24,9 @@ public class ModTags {
         public static final Tag.Named<Item> IRON_ARMOR = addArmorTag("iron"); ;
         public static final Tag.Named<Item> IRON_WEAPONS = addWeaponsTag("iron");
         public static final Tag.Named<Item> IRON_TOOLS = addToolsTag("iron");
-        public static final Tag.Named<Item> GOLD_ARMOR = addArmorTag("gold"); ;
-        public static final Tag.Named<Item> GOLD_WEAPONS = addWeaponsTag("gold");
-        public static final Tag.Named<Item> GOLD_TOOLS = addToolsTag("gold");
+        public static final Tag.Named<Item> GOLD_ARMOR = addArmorTag("golden"); ;
+        public static final Tag.Named<Item> GOLD_WEAPONS = addWeaponsTag("golden");
+        public static final Tag.Named<Item> GOLD_TOOLS = addToolsTag("golden");
         public static final Tag.Named<Item> DIAMOND_ARMOR = addArmorTag("diamond"); ;
         public static final Tag.Named<Item> DIAMOND_WEAPONS = addWeaponsTag("diamond");
         public static final Tag.Named<Item> DIAMOND_TOOLS = addToolsTag("diamond");
