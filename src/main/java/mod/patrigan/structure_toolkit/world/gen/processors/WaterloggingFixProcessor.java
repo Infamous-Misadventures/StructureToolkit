@@ -32,7 +32,7 @@ public class WaterloggingFixProcessor extends StructureProcessor {
         // Idea of workaround is detect if we are placing a waterloggable block and if so, remove the water in the world instead.
         // ONLY RUN THIS IF STRUCTURE BLOCK IS A DRY WATERLOGGABLE BLOCK
         ChunkPos currentChunkPos = new ChunkPos(blockInfo.pos);
-        if(blockInfo.state.getBlock() instanceof IWaterLoggable && !blockInfo.state.getValue(BlockStateProperties.WATERLOGGED)){
+        if(blockInfo.state.hasProperty(BlockStateProperties.WATERLOGGED) && !blockInfo.state.getValue(BlockStateProperties.WATERLOGGED)){
             IChunk currentChunk = world.getChunk(currentChunkPos.x, currentChunkPos.z);
             if(world.getFluidState(blockInfo.pos).is(FluidTags.WATER)){
                 currentChunk.setBlockState(blockInfo.pos, Blocks.STONE.defaultBlockState(), false);
