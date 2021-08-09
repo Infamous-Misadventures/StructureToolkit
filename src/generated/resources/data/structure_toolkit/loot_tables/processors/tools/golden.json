@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:tag",
-          "name": "forge:armor/gold",
+          "name": "forge:armor/golden",
           "expand": true
         }
       ]

@@ -7,17 +7,17 @@
         {
           "type": "minecraft:loot_table",
           "weight": 80,
-          "name": "structure_toolkit:processors/armors/gold"
+          "name": "structure_toolkit:processors/armors/golden"
         },
         {
           "type": "minecraft:loot_table",
           "weight": 80,
-          "name": "structure_toolkit:processors/weapons/gold"
+          "name": "structure_toolkit:processors/weapons/golden"
         },
         {
           "type": "minecraft:loot_table",
           "weight": 80,
-          "name": "structure_toolkit:processors/tools/gold"
+          "name": "structure_toolkit:processors/tools/golden"
         },
         {
           "type": "minecraft:loot_table",
@@ -29,7 +29,7 @@
               "treasure": true
             }
           ],
-          "name": "structure_toolkit:processors/armors/gold"
+          "name": "structure_toolkit:processors/armors/golden"
         },
         {
           "type": "minecraft:loot_table",
@@ -41,7 +41,7 @@
               "treasure": true
             }
           ],
-          "name": "structure_toolkit:processors/weapons/gold"
+          "name": "structure_toolkit:processors/weapons/golden"
         },
         {
           "type": "minecraft:loot_table",
@@ -53,7 +53,7 @@
               "treasure": true
             }
           ],
-          "name": "structure_toolkit:processors/tools/gold"
+          "name": "structure_toolkit:processors/tools/golden"
         }
       ]
     }
