@@ -15,7 +15,6 @@ import net.minecraft.world.gen.feature.template.PlacementSettings;
 import net.minecraft.world.gen.feature.template.StructureProcessor;
 import net.minecraft.world.gen.feature.template.Template;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import static mod.patrigan.structure_toolkit.StructureToolkit.MOD_ID;

@@ -12,6 +12,7 @@ import static mod.patrigan.structure_toolkit.StructureToolkit.MOD_ID;
 public class ModProcessors {
     // Replacers
     public static IStructureProcessorType<AirRetainerProcessor> AIR_RETAINER;
+    public static IStructureProcessorType<BiomeSurfaceProcessor> BIOME_SURFACE;
     public static IStructureProcessorType<BlockMossifyProcessor> BLOCK_MOSSIFY;
     public static IStructureProcessorType<GradientReplaceProcessor> GRADIENT_SPOT_REPLACE;
     public static IStructureProcessorType<SpawnerRandomizerProcessor> SPAWNER_RANDOMIZER_PROCESSOR;
@@ -35,6 +36,7 @@ public class ModProcessors {
     public static void init(){
         // Replacers
         AIR_RETAINER = register("air_retainer", AirRetainerProcessor.CODEC);
+        BIOME_SURFACE = register("biome_surface", BiomeSurfaceProcessor.CODEC);
         BLOCK_MOSSIFY = register("block_mossify", BlockMossifyProcessor.CODEC);
         GRADIENT_SPOT_REPLACE = register("gradient_replace", GradientReplaceProcessor.CODEC);
         SPAWNER_RANDOMIZER_PROCESSOR = register("spawner_randomizer", SpawnerRandomizerProcessor.CODEC);
