@@ -48,8 +48,12 @@ public class GradientReplaceProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos seedPos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, @Nullable Template template) {
-        setSeed(((ISeedReader) world).getSeed());
+    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, @Nullable Template template) {
+        if(world instanceof ISeedReader) {
+            setSeed(((ISeedReader) world).getSeed());
+        }else{
+            setSeed(structurePos.asLong());
+        }
 
         BlockState blockstate = blockInfo.state;
         BlockPos blockPos = blockInfo.pos;
