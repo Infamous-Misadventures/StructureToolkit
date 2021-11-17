@@ -17,6 +17,7 @@ public class ModProcessors {
     public static IStructureProcessorType<GradientReplaceProcessor> GRADIENT_SPOT_REPLACE;
     public static IStructureProcessorType<SpawnerRandomizerProcessor> SPAWNER_RANDOMIZER_PROCESSOR;
     // Adders
+    public static IStructureProcessorType<AttachmentProcessor> ATTACHMENT;
     public static IStructureProcessorType<CeilingAttachmentProcessor> CEILING_ATTACHMENT;
     public static IStructureProcessorType<LilyPadProcessor> LILY_PADS;
     public static IStructureProcessorType<MushroomProcessor> MUSHROOMS;
