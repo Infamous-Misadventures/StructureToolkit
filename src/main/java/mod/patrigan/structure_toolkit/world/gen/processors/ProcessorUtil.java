@@ -3,6 +3,8 @@ package mod.patrigan.structure_toolkit.world.gen.processors;
 import mod.patrigan.structure_toolkit.util.RandomType;
 import net.minecraft.block.*;
 import net.minecraft.item.Item;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.Property;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -52,25 +54,38 @@ public class ProcessorUtil {
         return resultList.get(random.nextInt(resultList.size()));
     }
 
-
-    // Todo: add type checks on the objects
-    // Todo: add checks to see if property actually exists.
-    public static BlockState copyStairsState(BlockState state, Block newBlock) {
-        return newBlock.defaultBlockState().setValue(StairsBlock.FACING, state.getValue(StairsBlock.FACING)).setValue(StairsBlock.SHAPE, state.getValue(StairsBlock.SHAPE)).setValue(StairsBlock.HALF, state.getValue(StairsBlock.HALF)).setValue(StairsBlock.WATERLOGGED, state.getValue(StairsBlock.WATERLOGGED));
+    public static BlockState copyStairsState(BlockState blockState, Block newBlock) {
+        BlockState newBlockState = newBlock.defaultBlockState();
+        newBlockState = updateProperty(blockState, newBlockState, StairsBlock.FACING);
+        newBlockState = updateProperty(blockState, newBlockState, StairsBlock.SHAPE);
+        newBlockState = updateProperty(blockState, newBlockState, StairsBlock.HALF);
+        newBlockState = updateProperty(blockState, newBlockState, StairsBlock.WATERLOGGED);
+        return newBlockState;
     }
 
-    public static BlockState copySlabState(BlockState blockstate, Block newBlock) {
-        return newBlock.defaultBlockState().setValue(SlabBlock.TYPE, blockstate.getValue(SlabBlock.TYPE)).setValue(SlabBlock.WATERLOGGED, blockstate.getValue(SlabBlock.WATERLOGGED));
+    public static BlockState copySlabState(BlockState blockState, Block newBlock) {
+        BlockState newBlockState = newBlock.defaultBlockState();
+        newBlockState = updateProperty(blockState, newBlockState, SlabBlock.TYPE);
+        newBlockState = updateProperty(blockState, newBlockState, SlabBlock.WATERLOGGED);
+        return newBlockState;
     }
 
-    public static BlockState copyWallState(BlockState blockstate, Block newBlock) {
-        return newBlock.defaultBlockState()
-                .setValue(WallBlock.UP, blockstate.getValue(WallBlock.UP))
-                .setValue(WallBlock.EAST_WALL, blockstate.getValue(WallBlock.EAST_WALL))
-                .setValue(WallBlock.NORTH_WALL, blockstate.getValue(WallBlock.NORTH_WALL))
-                .setValue(WallBlock.SOUTH_WALL, blockstate.getValue(WallBlock.SOUTH_WALL))
-                .setValue(WallBlock.WEST_WALL, blockstate.getValue(WallBlock.WEST_WALL))
-                .setValue(WallBlock.WATERLOGGED, blockstate.getValue(WallBlock.WATERLOGGED));
+    public static BlockState copyWallState(BlockState blockState, Block newBlock) {
+        BlockState newBlockState = newBlock.defaultBlockState();
+        newBlockState = updateProperty(blockState, newBlockState, WallBlock.UP);
+        newBlockState = updateProperty(blockState, newBlockState, WallBlock.EAST_WALL);
+        newBlockState = updateProperty(blockState, newBlockState, WallBlock.NORTH_WALL);
+        newBlockState = updateProperty(blockState, newBlockState, WallBlock.SOUTH_WALL);
+        newBlockState = updateProperty(blockState, newBlockState, WallBlock.WEST_WALL);
+        newBlockState = updateProperty(blockState, newBlockState, WallBlock.WATERLOGGED);
+        return newBlockState;
+    }
+
+    private static BlockState updateProperty(BlockState state, BlockState newState, Property property) {
+        if(newState.hasProperty(property)){
+            return newState.setValue(property, state.getValue(property));
+        }
+        return newState;
     }
 
     public static Template.BlockInfo getBlock(List<Template.BlockInfo> pieceBlocks, BlockPos pos) {

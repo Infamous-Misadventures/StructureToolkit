@@ -17,7 +17,9 @@ import net.minecraft.world.gen.feature.template.StructureProcessor;
 import net.minecraft.world.gen.feature.template.Template;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static mod.patrigan.structure_toolkit.init.ModProcessors.GRADIENT_SPOT_REPLACE;
 import static net.minecraftforge.registries.ForgeRegistries.BLOCKS;
@@ -25,34 +27,34 @@ import static net.minecraftforge.registries.ForgeRegistries.BLOCKS;
 public class GradientReplaceProcessor extends StructureProcessor {
     public static final Codec<GradientReplaceProcessor> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
-                    Codec.mapPair(ResourceLocation.CODEC.fieldOf("resource_location"), Codec.floatRange(0, 1).fieldOf("step_size")).codec().listOf().fieldOf("gradient_list").forGetter(processor -> processor.gradientList),
+                    Codec.mapPair(ResourceLocation.CODEC.fieldOf("resource_location"),Codec.floatRange(0, 1).fieldOf("step_size")).codec().listOf().fieldOf("gradient_list").forGetter(processor -> processor.gradientList),
+                    Codec.INT.optionalFieldOf("seed_adjustment", 0).forGetter(processor -> processor.seedAdjustment),
                     ResourceLocation.CODEC.fieldOf("to_replace").forGetter(data -> data.toReplace)
             ).apply(builder, GradientReplaceProcessor::new));
 
     private final List<Pair<ResourceLocation, Float>> gradientList;
+    private final int seedAdjustment;
     private final ResourceLocation toReplace;
 
-    protected long seed;
-    protected static OpenSimplex2F noiseGen;
+    protected static Map<Long, OpenSimplex2F> noiseGenSeeds = new HashMap<>();
 
-    public GradientReplaceProcessor(List<Pair<ResourceLocation, Float>> gradientList, ResourceLocation toReplace) {
+    public GradientReplaceProcessor(List<Pair<ResourceLocation, Float>> gradientList, int seedAdjustment, ResourceLocation toReplace) {
         this.gradientList = gradientList;
+        this.seedAdjustment = seedAdjustment;
         this.toReplace = toReplace;
     }
 
-    public void setSeed(long seed) {
-        if (this.seed != seed || noiseGen == null) {
-            noiseGen = new OpenSimplex2F(seed);
-            this.seed = seed;
-        }
+    public OpenSimplex2F getNoiseGen(long seed) {
+        return noiseGenSeeds.computeIfAbsent(seed, OpenSimplex2F::new);
     }
 
     @Override
     public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, @Nullable Template template) {
+        OpenSimplex2F noiseGen = null;
         if(world instanceof ISeedReader) {
-            setSeed(((ISeedReader) world).getSeed());
+            noiseGen = getNoiseGen(((ISeedReader) world).getSeed()+seedAdjustment);
         }else{
-            setSeed(structurePos.asLong());
+            noiseGen = getNoiseGen(structurePos.asLong()+seedAdjustment);
         }
 
         BlockState blockstate = blockInfo.state;
@@ -61,7 +63,7 @@ public class GradientReplaceProcessor extends StructureProcessor {
             return blockInfo;
         }
 
-        ResourceLocation newBlockResourceLocation = getReplacementBlockResourceLocation(blockPos);
+        ResourceLocation newBlockResourceLocation = getReplacementBlockResourceLocation(blockPos, noiseGen);
         Block newBlock = BLOCKS.getValue(newBlockResourceLocation);
         if(newBlock == null){
             return blockInfo;
@@ -78,7 +80,7 @@ public class GradientReplaceProcessor extends StructureProcessor {
         }
     }
 
-    private ResourceLocation getReplacementBlockResourceLocation(BlockPos blockPos) {
+    private ResourceLocation getReplacementBlockResourceLocation(BlockPos blockPos, OpenSimplex2F noiseGen) {
         double noiseValue = (noiseGen.noise3_Classic(blockPos.getX() * 0.075D, blockPos.getY() * 0.075D, blockPos.getZ() * 0.075D));
         float stepSize = 0;
         for(Pair<ResourceLocation, Float> pair: gradientList){

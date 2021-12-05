@@ -21,8 +21,7 @@ import java.util.Random;
 import static mod.patrigan.structure_toolkit.init.ModProcessors.ATTACHMENT;
 import static mod.patrigan.structure_toolkit.init.ModProcessors.CEILING_ATTACHMENT;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
-import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.getBlock;
-import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.isSolid;
+import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.*;
 import static net.minecraft.block.Blocks.AIR;
 import static net.minecraftforge.registries.ForgeRegistries.BLOCKS;
 
@@ -59,12 +58,12 @@ public class AttachmentProcessor extends StructureProcessor {
         Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
-        if(blockstate.getBlock().equals(AIR) && random.nextFloat() <= rarity){
+        if(blockstate.isAir() && random.nextFloat() <= rarity){
             List<Template.BlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
             boolean hasSides = requiresSides == 0 || hasSides(pieceBlocks, rawBlockInfo.pos) >= requiresSides;
             boolean hasUp = !requiresUp || hasDirection(pieceBlocks, rawBlockInfo.pos, Direction.UP);
             boolean hasDown = !requiresDown || hasDirection(pieceBlocks, rawBlockInfo.pos, Direction.DOWN);
-            if(hasSides){
+            if(hasSides && hasUp && hasDown){
                 return new Template.BlockInfo(blockpos, BLOCKS.getValue(block).defaultBlockState(), blockInfo.nbt);
             }
         }
@@ -90,7 +89,8 @@ public class AttachmentProcessor extends StructureProcessor {
     }
 
     private boolean hasDirection(List<Template.BlockInfo> pieceBlocks, BlockPos pos, Direction direction) {
-        return isSolid(getBlock(pieceBlocks, pos.mutable().move(direction)));
+        Template.BlockInfo block = getBlock(pieceBlocks, pos.mutable().move(direction));
+        return isSolid(block) && isFaceFull(block, direction.getOpposite());
     }
 
     protected IStructureProcessorType<?> getType() {

@@ -42,6 +42,7 @@ public class ModProcessors {
         GRADIENT_SPOT_REPLACE = register("gradient_replace", GradientReplaceProcessor.CODEC);
         SPAWNER_RANDOMIZER_PROCESSOR = register("spawner_randomizer", SpawnerRandomizerProcessor.CODEC);
         // Adders
+        ATTACHMENT = register("attachment", AttachmentProcessor.CODEC);
         CEILING_ATTACHMENT = register("ceiling_attachment", CeilingAttachmentProcessor.CODEC);
         LILY_PADS = register("lily_pads", LilyPadProcessor.CODEC);
         MUSHROOMS = register("mushrooms", MushroomProcessor.CODEC);
