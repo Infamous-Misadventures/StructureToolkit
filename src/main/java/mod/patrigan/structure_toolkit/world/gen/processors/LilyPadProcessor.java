@@ -4,23 +4,22 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.init.ModProcessors;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.List;
 import java.util.Random;
 
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
 import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.getBlock;
-import static net.minecraft.block.Blocks.AIR;
-import static net.minecraft.block.Blocks.LILY_PAD;
-import static net.minecraft.util.Direction.DOWN;
+import static net.minecraft.core.Direction.DOWN;
+import static net.minecraft.world.level.block.Blocks.LILY_PAD;
 
 public class LilyPadProcessor extends StructureProcessor {
     public static final Codec<LilyPadProcessor> CODEC = RecordCodecBuilder.create(builder ->
@@ -39,21 +38,21 @@ public class LilyPadProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
+    public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
         Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
-        if(blockstate.getBlock().equals(AIR) && random.nextFloat() <= rarity){
-            List<Template.BlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
-            Template.BlockInfo below = getBlock(pieceBlocks, rawBlockInfo.pos.relative(DOWN));
+        if(blockstate.isAir() && random.nextFloat() <= rarity){
+            List<StructureTemplate.StructureBlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
+            StructureTemplate.StructureBlockInfo below = getBlock(pieceBlocks, rawBlockInfo.pos.relative(DOWN));
             if(below != null && below.state.getFluidState().getType() == Fluids.WATER) {
-                return new Template.BlockInfo(blockpos, LILY_PAD.defaultBlockState(), blockInfo.nbt);
+                return new StructureTemplate.StructureBlockInfo(blockpos, LILY_PAD.defaultBlockState(), blockInfo.nbt);
             }
         }
         return blockInfo;
     }
 
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return ModProcessors.LILY_PADS;
     }
 }

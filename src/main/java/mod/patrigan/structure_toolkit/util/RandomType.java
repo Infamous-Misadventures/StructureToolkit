@@ -2,7 +2,6 @@ package mod.patrigan.structure_toolkit.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.minecraft.item.DyeColor;
 
 public enum RandomType {
     BLOCK,

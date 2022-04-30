@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1+', changing: true
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
@@ -31,12 +31,13 @@ apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 version = "${mc_version}-${mod_version}"
 group = 'mod.patrigan.structure_toolkit' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'structure_toolkit'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
@@ -130,12 +131,10 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-
-    compileOnly fg.deobf("mezz.jei:jei-1.16.3:7.6.0.49:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.16.3:7.6.0.49")
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     //Tools
-    runtimeOnly fg.deobf("loadnbtblock:loadnbtblock:1.0")
+//    runtimeOnly fg.deobf("loadnbtblock:loadnbtblock:1.0")
     //runtimeOnly fg.deobf("ArmorPoser:ArmorPoser:1.16.5-1.0.1")
     //runtimeOnly fg.deobf("curse.maven:blame-406201:3181314")
 
@@ -156,7 +155,7 @@ jar {
             "Specification-Vendor": "Patrigan",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
+            "Implementation-Version": "${mod_version}",
             "Implementation-Vendor" :"Patrigan",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "MixinConfigs": "${modid}.mixins.json"

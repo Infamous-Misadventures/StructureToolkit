@@ -4,33 +4,29 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.util.GeneralUtils;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.block.AbstractFurnaceBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.LecternBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.AbstractFurnaceTileEntity;
-import net.minecraft.tileentity.LecternTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.Random;
 
-import static mod.patrigan.structure_toolkit.init.ModProcessors.FURNACES;
 import static mod.patrigan.structure_toolkit.init.ModProcessors.LECTERNS;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
-import static net.minecraft.block.LecternBlock.HAS_BOOK;
-import static net.minecraft.block.LecternBlock.POWERED;
 import static net.minecraft.tags.ItemTags.LECTERN_BOOKS;
+import static net.minecraft.world.level.block.LecternBlock.HAS_BOOK;
+import static net.minecraft.world.level.block.LecternBlock.POWERED;
 
 public class LecternProcessor extends StructureProcessor {
 
@@ -49,19 +45,19 @@ public class LecternProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
-        if (blockInfo.state.getBlock() instanceof LecternBlock && blockInfo.state.hasTileEntity()) {
-            TileEntity tileEntity = blockInfo.state.createTileEntity(world);
-            if(tileEntity instanceof LecternTileEntity) {
+    public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
+        if (blockInfo.state.getBlock() instanceof LecternBlock && blockInfo.state.hasBlockEntity()) {
+            BlockEntity blockEntity = ((LecternBlock) blockInfo.state.getBlock()).newBlockEntity(blockInfo.pos, blockInfo.state);
+            if(blockEntity instanceof LecternBlockEntity) {
                 Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
-                ServerWorld serverWorld = ((IServerWorld) world).getLevel();
+                ServerLevel serverWorld = ((ServerLevelAccessor) world).getLevel();
                 ItemStack itemStack = getItem(random, serverWorld, blockInfo.pos, lootTable);
                 if(!itemStack.isEmpty()){
-                    LecternTileEntity lecternTileEntity = (LecternTileEntity) tileEntity;
-                    lecternTileEntity.setLevelAndPosition(serverWorld, blockInfo.pos);
-                    CompoundNBT newNbt = setLecternBook(blockInfo, lecternTileEntity, itemStack);
+                    LecternBlockEntity lecternBlockEntity = (LecternBlockEntity) blockEntity;
+                    serverWorld.setBlockEntity(lecternBlockEntity);
+                    CompoundTag newNbt = setLecternBook(blockInfo, lecternBlockEntity, itemStack);
                     BlockState newBlockState = blockInfo.state.setValue(POWERED, Boolean.FALSE).setValue(HAS_BOOK, Boolean.TRUE);
-                    return new Template.BlockInfo(
+                    return new StructureTemplate.StructureBlockInfo(
                             blockInfo.pos,
                             newBlockState,
                             newNbt);
@@ -74,17 +70,17 @@ public class LecternProcessor extends StructureProcessor {
     /**
      * Makes the given block entity now have the loottable items
      */
-    private CompoundNBT setLecternBook(Template.BlockInfo blockInfo, LecternTileEntity lecternTileEntity, ItemStack itemStack) {
-        CompoundNBT nbt = blockInfo.nbt;
-        lecternTileEntity.load(blockInfo.state, nbt);
+    private CompoundTag setLecternBook(StructureTemplate.StructureBlockInfo blockInfo, LecternBlockEntity lecternTileEntity, ItemStack itemStack) {
+        CompoundTag nbt = blockInfo.nbt;
+        lecternTileEntity.load(nbt);
         lecternTileEntity.setBook(itemStack.split(1));
         return lecternTileEntity.save(nbt);
     }
 
 
-    private ItemStack getItem(Random random, ServerWorld serverWorld, BlockPos blockPos, ResourceLocation lootTable){
+    private ItemStack getItem(Random random, ServerLevel serverWorld, BlockPos blockPos, ResourceLocation lootTable){
         ItemStack itemStack = GeneralUtils.generateItemStack(serverWorld, blockPos, lootTable, random);
-        if (!itemStack.isEmpty() && itemStack.getItem().is(LECTERN_BOOKS)) {
+        if (!itemStack.isEmpty() && itemStack.getItem().getTags().contains(LECTERN_BOOKS.getName())) {
             return itemStack;
         }else{
             return ItemStack.EMPTY;
@@ -93,7 +89,7 @@ public class LecternProcessor extends StructureProcessor {
 
 
     @Override
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return LECTERNS;
     }
 }

@@ -2,7 +2,7 @@ package mod.patrigan.structure_toolkit.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.math.Rotations;
+import net.minecraft.core.Rotations;
 
 public class Codecs {
     public static final Codec<Rotations> CODEC = RecordCodecBuilder.create(builder ->

@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 import static mod.patrigan.structure_toolkit.StructureToolkit.MOD_ID;
 
-public class ModEntityTypeTagsProvider extends net.minecraft.data.EntityTypeTagsProvider {
+public class ModEntityTypeTagsProvider extends net.minecraft.data.tags.EntityTypeTagsProvider {
 
 
     public ModEntityTypeTagsProvider(DataGenerator dataGenerator, @Nullable ExistingFileHelper existingFileHelper) {

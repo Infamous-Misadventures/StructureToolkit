@@ -3,14 +3,14 @@ package mod.patrigan.structure_toolkit.world.gen.processors;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,17 +39,17 @@ public class AirRetainerProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
+    public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
         Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         if(world.isEmptyBlock(blockInfo.pos) && random.nextFloat() < rarity && (toReplace.isEmpty() || toReplace.contains(blockInfo.state.getBlock().getRegistryName()))){
             BlockState blockState = world.getBlockState(blockInfo.pos);
-            return new Template.BlockInfo(blockInfo.pos, blockState, null);
+            return new StructureTemplate.StructureBlockInfo(blockInfo.pos, blockState, null);
         }else {
             return blockInfo;
         }
     }
 
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return AIR_RETAINER;
     }
 }

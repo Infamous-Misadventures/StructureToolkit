@@ -30,18 +30,17 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.resources.JsonReloadListener;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
@@ -51,6 +50,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import static net.minecraftforge.fml.LogicalSide.SERVER;
 
 /**
  * <p>See drullkus's primer on what codecs are and how to assemble them:<br>
@@ -106,7 +107,7 @@ import java.util.function.Function;
  * name collisions, e.g. using "blockholdermod/block_holders" as the folder name would result in a json with the
  * id "bananas:banana_block" to be located at data/bananas/blockholdermod/block_holders/some_json.json</p>
  */
-public class CodecJsonDataManager<T> extends JsonReloadListener
+public class CodecJsonDataManager<T> extends SimpleJsonResourceReloadListener
 {
     // default gson if unspecified
     private static final Gson STANDARD_GSON = new Gson();
@@ -166,7 +167,7 @@ public class CodecJsonDataManager<T> extends JsonReloadListener
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> jsons, IResourceManager resourceManager, IProfiler profiler)
+    protected void apply(Map<ResourceLocation, JsonElement> jsons, ResourceManager resourceManager, ProfilerFiller profiler)
     {
         this.logger.info("Beginning loading of data for data loader: {}", this.folderName);
         this.data = this.mapValues(jsons);
@@ -176,7 +177,7 @@ public class CodecJsonDataManager<T> extends JsonReloadListener
         boolean isServer = true;
         try
         {
-            LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
+            LogicalSidedProvider.CLIENTWORLD.get(SERVER);
         }
         catch(IllegalStateException e)
         {
@@ -236,10 +237,10 @@ public class CodecJsonDataManager<T> extends JsonReloadListener
                                                                                 final Function<Map<ResourceLocation, T>, PACKET> packetFactory)
     {
         return event -> {
-            PlayerEntity player = event.getPlayer();
-            if (player instanceof ServerPlayerEntity)
+            Player player = event.getPlayer();
+            if (player instanceof ServerPlayer)
             {
-                channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packetFactory.apply(this.data));
+                channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer)player), packetFactory.apply(this.data));
             }
         };
     }

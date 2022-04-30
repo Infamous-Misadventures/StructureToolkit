@@ -3,15 +3,15 @@ package mod.patrigan.structure_toolkit.world.gen.processors;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,10 +22,9 @@ import java.util.stream.Collectors;
 import static mod.patrigan.structure_toolkit.init.ModProcessors.VINES;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
 import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.*;
-import static net.minecraft.block.Blocks.AIR;
-import static net.minecraft.block.Blocks.VINE;
-import static net.minecraft.block.VineBlock.PROPERTY_BY_DIRECTION;
-import static net.minecraft.util.Direction.*;
+import static net.minecraft.core.Direction.*;
+import static net.minecraft.world.level.block.Blocks.VINE;
+import static net.minecraft.world.level.block.VineBlock.PROPERTY_BY_DIRECTION;
 
 public class VineProcessor extends StructureProcessor {
     public static final Codec<VineProcessor> CODEC = RecordCodecBuilder.create(builder ->
@@ -50,13 +49,13 @@ public class VineProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
+    public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
         Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
         List<Direction> possibleDirections = new ArrayList<>();
-        if(blockstate.getBlock().equals(AIR) && random.nextFloat() <= rarity){
-            List<Template.BlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
+        if(blockstate.isAir() && random.nextFloat() <= rarity){
+            List<StructureTemplate.StructureBlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
             if(attachToWall){
                 possibleDirections.addAll(Arrays.asList(NORTH, EAST, SOUTH, WEST));
             }
@@ -70,16 +69,16 @@ public class VineProcessor extends StructureProcessor {
         }else{
             Direction direction = possibleDirections.get(random.nextInt(possibleDirections.size()));
             BooleanProperty property = PROPERTY_BY_DIRECTION.get(direction);
-            return new Template.BlockInfo(blockpos, VINE.defaultBlockState().setValue(property, true), blockInfo.nbt);
+            return new StructureTemplate.StructureBlockInfo(blockpos, VINE.defaultBlockState().setValue(property, true), blockInfo.nbt);
         }
     }
 
-    private boolean isDirectionPossible(List<Template.BlockInfo> pieceBlocks, BlockPos pos, Direction direction){
-        Template.BlockInfo tempBlock = getBlock(pieceBlocks, pos.relative(direction));
+    private boolean isDirectionPossible(List<StructureTemplate.StructureBlockInfo> pieceBlocks, BlockPos pos, Direction direction){
+        StructureTemplate.StructureBlockInfo tempBlock = getBlock(pieceBlocks, pos.relative(direction));
         return isFaceFull(tempBlock, direction.getOpposite());
     }
 
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return VINES;
     }
 }

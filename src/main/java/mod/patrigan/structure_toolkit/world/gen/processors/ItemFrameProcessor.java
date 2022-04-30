@@ -5,19 +5,19 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.init.ModProcessors;
 import mod.patrigan.structure_toolkit.util.GeneralUtils;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.Random;
 
@@ -47,29 +47,29 @@ public class ItemFrameProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.EntityInfo processEntity(IWorldReader world, BlockPos structurePos, Template.EntityInfo rawEntityInfo, Template.EntityInfo entityInfo, PlacementSettings placementSettings, Template template) {
+    public StructureTemplate.StructureEntityInfo processEntity(LevelReader world, BlockPos structurePos, StructureTemplate.StructureEntityInfo rawEntityInfo, StructureTemplate.StructureEntityInfo entityInfo, StructurePlaceSettings placementSettings, StructureTemplate template) {
         Random random = ProcessorUtil.getRandom(randomType, entityInfo.blockPos, BlockPos.ZERO, structurePos, world, SEED);
-        Vector3d pos = entityInfo.pos;
+        Vec3 pos = entityInfo.pos;
         BlockPos blockPos = entityInfo.blockPos;
-        CompoundNBT nbt = entityInfo.nbt;
+        CompoundTag nbt = entityInfo.nbt;
         if(nbt.getString("id").equals(EntityType.ITEM_FRAME.getRegistryName().toString())){
             ItemStack itemStack = getItemStack(random, world, blockPos);
-            nbt.put("Item", itemStack.save(new CompoundNBT()));
+            nbt.put("Item", itemStack.save(new CompoundTag()));
             nbt.putBoolean("Invisible", invisible);
             if(randomRotation){
                 nbt.putByte("ItemRotation", (byte)random.nextInt(8));
             }
-            return new Template.EntityInfo(pos, blockPos, nbt);
+            return new StructureTemplate.StructureEntityInfo(pos, blockPos, nbt);
         }
         return entityInfo;
     }
 
-    private ItemStack getItemStack(Random random, IWorldReader world, BlockPos blockPos) {
-        ServerWorld serverWorld = ((IServerWorld)world).getLevel();
+    private ItemStack getItemStack(Random random, LevelReader world, BlockPos blockPos) {
+        ServerLevel serverWorld = ((ServerLevelAccessor)world).getLevel();
         return GeneralUtils.generateItemStack(serverWorld, blockPos, lootTable, random);
     }
 
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return ModProcessors.ITEM_FRAMES;
     }
 }

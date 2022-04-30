@@ -5,25 +5,24 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.init.ModProcessors;
 import mod.patrigan.structure_toolkit.util.GeneralUtils;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Rotations;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Rotations;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.Random;
 
@@ -68,11 +67,11 @@ public class ArmorStandProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.EntityInfo processEntity(IWorldReader world, BlockPos structurePos, Template.EntityInfo rawEntityInfo, Template.EntityInfo entityInfo, PlacementSettings placementSettings, Template template) {
+    public StructureTemplate.StructureEntityInfo processEntity(LevelReader world, BlockPos structurePos, StructureTemplate.StructureEntityInfo rawEntityInfo, StructureTemplate.StructureEntityInfo entityInfo, StructurePlaceSettings placementSettings, StructureTemplate template) {
         Random random = ProcessorUtil.getRandom(randomType, entityInfo.blockPos, BlockPos.ZERO, structurePos, world, SEED);
-        Vector3d pos = entityInfo.pos;
+        Vec3 pos = entityInfo.pos;
         BlockPos blockPos = entityInfo.blockPos;
-        CompoundNBT nbt = entityInfo.nbt;
+        CompoundTag nbt = entityInfo.nbt;
         if(nbt.getString("id").equals(EntityType.ARMOR_STAND.getRegistryName().toString())){
             nbt.put("ArmorItems", writeArmorItems(random, world, blockPos));
             nbt.put("Pose", this.writePose(random));
@@ -80,13 +79,13 @@ public class ArmorStandProcessor extends StructureProcessor {
             nbt.putBoolean("Small", small);
             nbt.putBoolean("ShowArms", showArms);
             nbt.putBoolean("NoBasePlate", noBasePlate);
-            return new Template.EntityInfo(pos, blockPos, nbt);
+            return new StructureTemplate.StructureEntityInfo(pos, blockPos, nbt);
         }
         return entityInfo;
     }
 
-    private CompoundNBT writePose(Random random) {
-        CompoundNBT compoundnbt = new CompoundNBT();
+    private CompoundTag writePose(Random random) {
+        CompoundTag compoundnbt = new CompoundTag();
         compoundnbt.put("Head", generateRandomRotations(-45, 45, -65, 65, -45, 45, random).save());
         compoundnbt.put("Body", generateRandomRotations(0, 1, 0, 1, 0, 1, random).save());
         compoundnbt.put("LeftArm", generateRandomRotations(-180, 40, 0, 0, -180, 180, random).save());
@@ -96,11 +95,11 @@ public class ArmorStandProcessor extends StructureProcessor {
         return compoundnbt;
     }
 
-    private ListNBT writeArmorItems(Random random, IWorldReader world, BlockPos blockPos){
-        NonNullList<ItemStack> armorItems = getArmorItems(random, (IServerWorld) world, blockPos);
-        ListNBT listnbt = new ListNBT();
+    private ListTag writeArmorItems(Random random, LevelReader world, BlockPos blockPos){
+        NonNullList<ItemStack> armorItems = getArmorItems(random, (ServerLevelAccessor) world, blockPos);
+        ListTag listnbt = new ListTag();
         for(ItemStack itemstack : armorItems) {
-            CompoundNBT compoundnbt = new CompoundNBT();
+            CompoundTag compoundnbt = new CompoundTag();
             if (!itemstack.isEmpty()) {
                 itemstack.save(compoundnbt);
             }
@@ -109,19 +108,19 @@ public class ArmorStandProcessor extends StructureProcessor {
         return listnbt;
     }
 
-    private NonNullList<ItemStack> getArmorItems(Random random, IServerWorld world, BlockPos blockPos) {
-        ServerWorld serverWorld = world.getLevel();
+    private NonNullList<ItemStack> getArmorItems(Random random, ServerLevelAccessor world, BlockPos blockPos) {
+        ServerLevel serverWorld = world.getLevel();
         NonNullList<ItemStack> armorItems = NonNullList.withSize(4, ItemStack.EMPTY);
-        armorItems.set(EquipmentSlotType.HEAD.getIndex(), getArmorItem(random, serverWorld, blockPos, headLootTable, EquipmentSlotType.HEAD));
-        armorItems.set(EquipmentSlotType.CHEST.getIndex(), getArmorItem(random, serverWorld, blockPos, chestLootTable, EquipmentSlotType.CHEST));
-        armorItems.set(EquipmentSlotType.LEGS.getIndex(), getArmorItem(random, serverWorld, blockPos, legsLootTable, EquipmentSlotType.LEGS));
-        armorItems.set(EquipmentSlotType.FEET.getIndex(), getArmorItem(random, serverWorld, blockPos, feetLootTable, EquipmentSlotType.FEET));
+        armorItems.set(EquipmentSlot.HEAD.getIndex(), getArmorItem(random, serverWorld, blockPos, headLootTable, EquipmentSlot.HEAD));
+        armorItems.set(EquipmentSlot.CHEST.getIndex(), getArmorItem(random, serverWorld, blockPos, chestLootTable, EquipmentSlot.CHEST));
+        armorItems.set(EquipmentSlot.LEGS.getIndex(), getArmorItem(random, serverWorld, blockPos, legsLootTable, EquipmentSlot.LEGS));
+        armorItems.set(EquipmentSlot.FEET.getIndex(), getArmorItem(random, serverWorld, blockPos, feetLootTable, EquipmentSlot.FEET));
         return armorItems;
     }
 
-    private ItemStack getArmorItem(Random random, ServerWorld serverWorld, BlockPos blockPos, ResourceLocation lootTable, EquipmentSlotType equipmentSlotType){
+    private ItemStack getArmorItem(Random random, ServerLevel serverWorld, BlockPos blockPos, ResourceLocation lootTable, EquipmentSlot equipmentSlotType){
         ItemStack itemStack = GeneralUtils.generateItemStack(serverWorld, blockPos, lootTable, random);
-        if (!itemStack.isEmpty() && equipmentSlotType.equals(MobEntity.getEquipmentSlotForItem(itemStack))) {
+        if (!itemStack.isEmpty() && equipmentSlotType.equals(Mob.getEquipmentSlotForItem(itemStack))) {
             return itemStack;
         }else{
             return ItemStack.EMPTY;
@@ -145,7 +144,7 @@ public class ArmorStandProcessor extends StructureProcessor {
         }
     }
 
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return ModProcessors.ARMOR_STANDS;
     }
 }

@@ -4,17 +4,17 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.util.OpenSimplex2F;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ISeedReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -49,10 +49,10 @@ public class GradientReplaceProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, @Nullable Template template) {
+    public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, @Nullable StructureTemplate template) {
         OpenSimplex2F noiseGen = null;
-        if(world instanceof ISeedReader) {
-            noiseGen = getNoiseGen(((ISeedReader) world).getSeed()+seedAdjustment);
+        if(world instanceof WorldGenLevel) {
+            noiseGen = getNoiseGen(((WorldGenLevel) world).getSeed()+seedAdjustment);
         }else{
             noiseGen = getNoiseGen(structurePos.asLong()+seedAdjustment);
         }
@@ -69,14 +69,14 @@ public class GradientReplaceProcessor extends StructureProcessor {
             return blockInfo;
         }
 
-        if (blockstate.getBlock().is(BlockTags.STAIRS)) {
-            return new Template.BlockInfo(blockPos, ProcessorUtil.copyStairsState(blockstate, newBlock), blockInfo.nbt);
-        } else if (blockstate.getBlock().is(BlockTags.SLABS)) {
-            return new Template.BlockInfo(blockPos, ProcessorUtil.copySlabState(blockstate, newBlock), blockInfo.nbt);
-        } else if (blockstate.getBlock().is(BlockTags.WALLS)) {
-            return new Template.BlockInfo(blockPos, ProcessorUtil.copyWallState(blockstate, newBlock), blockInfo.nbt);
+        if (blockstate.getBlock().getTags().contains(BlockTags.STAIRS.getName())) {
+            return new StructureTemplate.StructureBlockInfo(blockPos, ProcessorUtil.copyStairsState(blockstate, newBlock), blockInfo.nbt);
+        } else if (blockstate.getBlock().getTags().contains(BlockTags.SLABS.getName())) {
+            return new StructureTemplate.StructureBlockInfo(blockPos, ProcessorUtil.copySlabState(blockstate, newBlock), blockInfo.nbt);
+        } else if (blockstate.getBlock().getTags().contains(BlockTags.WALLS.getName())) {
+            return new StructureTemplate.StructureBlockInfo(blockPos, ProcessorUtil.copyWallState(blockstate, newBlock), blockInfo.nbt);
         }else{
-            return new Template.BlockInfo(blockPos, newBlock.defaultBlockState(), blockInfo.nbt);
+            return new StructureTemplate.StructureBlockInfo(blockPos, newBlock.defaultBlockState(), blockInfo.nbt);
         }
     }
 
@@ -92,7 +92,7 @@ public class GradientReplaceProcessor extends StructureProcessor {
         return toReplace;
     }
 
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return GRADIENT_SPOT_REPLACE;
     }
 }

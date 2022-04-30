@@ -3,15 +3,15 @@ package mod.patrigan.structure_toolkit.world.gen.processors;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,6 @@ import static mod.patrigan.structure_toolkit.init.ModProcessors.ATTACHMENT;
 import static mod.patrigan.structure_toolkit.init.ModProcessors.CEILING_ATTACHMENT;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
 import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.*;
-import static net.minecraft.block.Blocks.AIR;
 import static net.minecraftforge.registries.ForgeRegistries.BLOCKS;
 
 public class AttachmentProcessor extends StructureProcessor {
@@ -54,29 +53,29 @@ public class AttachmentProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
+    public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
         Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
         if(blockstate.isAir() && random.nextFloat() <= rarity){
-            List<Template.BlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
+            List<StructureTemplate.StructureBlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
             boolean hasSides = requiresSides == 0 || hasSides(pieceBlocks, rawBlockInfo.pos) >= requiresSides;
             boolean hasUp = !requiresUp || hasDirection(pieceBlocks, rawBlockInfo.pos, Direction.UP);
             boolean hasDown = !requiresDown || hasDirection(pieceBlocks, rawBlockInfo.pos, Direction.DOWN);
             if(hasSides && hasUp && hasDown){
-                return new Template.BlockInfo(blockpos, BLOCKS.getValue(block).defaultBlockState(), blockInfo.nbt);
+                return new StructureTemplate.StructureBlockInfo(blockpos, BLOCKS.getValue(block).defaultBlockState(), blockInfo.nbt);
             }
         }
         return blockInfo;
     }
 
-    private int hasSides(List<Template.BlockInfo> pieceBlocks, BlockPos pos) {
-        List<Template.BlockInfo> neighbours = getSideNeighboursBlockInfo(pieceBlocks, pos, false);
+    private int hasSides(List<StructureTemplate.StructureBlockInfo> pieceBlocks, BlockPos pos) {
+        List<StructureTemplate.StructureBlockInfo> neighbours = getSideNeighboursBlockInfo(pieceBlocks, pos, false);
         return (int) neighbours.stream().filter(ProcessorUtil::isSolid).count();
     }
 
-    private List<Template.BlockInfo> getSideNeighboursBlockInfo(List<Template.BlockInfo> pieceBlocks, BlockPos pos, boolean diagonal) {
-        List<Template.BlockInfo> neighbours = new ArrayList<>(Arrays.asList(getBlock(pieceBlocks, pos.north()), getBlock(pieceBlocks, pos.south()), getBlock(pieceBlocks, pos.west()), getBlock(pieceBlocks, pos.east())));
+    private List<StructureTemplate.StructureBlockInfo> getSideNeighboursBlockInfo(List<StructureTemplate.StructureBlockInfo> pieceBlocks, BlockPos pos, boolean diagonal) {
+        List<StructureTemplate.StructureBlockInfo> neighbours = new ArrayList<>(Arrays.asList(getBlock(pieceBlocks, pos.north()), getBlock(pieceBlocks, pos.south()), getBlock(pieceBlocks, pos.west()), getBlock(pieceBlocks, pos.east())));
         if(diagonal){
             neighbours.addAll(Arrays.asList(
                     getBlock(pieceBlocks, pos.north().east()),
@@ -88,12 +87,12 @@ public class AttachmentProcessor extends StructureProcessor {
         return neighbours;
     }
 
-    private boolean hasDirection(List<Template.BlockInfo> pieceBlocks, BlockPos pos, Direction direction) {
-        Template.BlockInfo block = getBlock(pieceBlocks, pos.mutable().move(direction));
+    private boolean hasDirection(List<StructureTemplate.StructureBlockInfo> pieceBlocks, BlockPos pos, Direction direction) {
+        StructureTemplate.StructureBlockInfo block = getBlock(pieceBlocks, pos.mutable().move(direction));
         return isSolid(block) && isFaceFull(block, direction.getOpposite());
     }
 
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return ATTACHMENT;
     }
 }

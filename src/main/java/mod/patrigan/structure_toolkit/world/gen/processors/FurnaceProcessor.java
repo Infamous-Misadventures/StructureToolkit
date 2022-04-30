@@ -4,26 +4,20 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.util.GeneralUtils;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.block.AbstractFurnaceBlock;
-import net.minecraft.block.ITileEntityProvider;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.AbstractCookingRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.AbstractFurnaceTileEntity;
-import net.minecraft.tileentity.FurnaceTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.Random;
 
@@ -56,18 +50,18 @@ public class FurnaceProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
-        if (blockInfo.state.getBlock() instanceof AbstractFurnaceBlock && blockInfo.state.hasTileEntity()) {
-            TileEntity tileEntity = blockInfo.state.createTileEntity(world);
-            if(tileEntity instanceof AbstractFurnaceTileEntity) {
-                AbstractFurnaceTileEntity furnaceTileEntity = (AbstractFurnaceTileEntity) tileEntity;
-                ServerWorld serverWorld = ((IServerWorld) world).getLevel();
-                furnaceTileEntity.setLevelAndPosition(serverWorld, blockInfo.pos);
+    public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
+        if (blockInfo.state.getBlock() instanceof AbstractFurnaceBlock && blockInfo.state.hasBlockEntity()) {
+            BlockEntity blockEntity = ((AbstractFurnaceBlock) blockInfo.state.getBlock()).newBlockEntity(blockInfo.pos, blockInfo.state);
+            if(blockEntity instanceof AbstractFurnaceBlockEntity) {
+                AbstractFurnaceBlockEntity furnaceBlockEntity = (AbstractFurnaceBlockEntity) blockEntity;
+                ServerLevel serverWorld = ((ServerLevelAccessor) world).getLevel();
+                serverWorld.setBlockEntity(furnaceBlockEntity);
                 Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
-                return new Template.BlockInfo(
+                return new StructureTemplate.StructureBlockInfo(
                         blockInfo.pos,
                         blockInfo.state,
-                        setAbstractFurnaceEntity(random, serverWorld, blockInfo.pos, blockInfo, furnaceTileEntity));
+                        setAbstractFurnaceEntity(random, serverWorld, blockInfo.pos, blockInfo, furnaceBlockEntity));
             }
         }
         return blockInfo;
@@ -76,9 +70,9 @@ public class FurnaceProcessor extends StructureProcessor {
     /**
      * Makes the given block entity now have the loottable items
      */
-    private CompoundNBT setAbstractFurnaceEntity(Random random, ServerWorld serverWorld, BlockPos blockPos, Template.BlockInfo blockInfo, AbstractFurnaceTileEntity furnaceTileEntity) {
-        CompoundNBT nbt = blockInfo.nbt;
-        furnaceTileEntity.load(blockInfo.state, nbt);
+    private CompoundTag setAbstractFurnaceEntity(Random random, ServerLevel serverWorld, BlockPos blockPos, StructureTemplate.StructureBlockInfo blockInfo, AbstractFurnaceBlockEntity furnaceTileEntity) {
+        CompoundTag nbt = blockInfo.nbt;
+        furnaceTileEntity.load(nbt);
         furnaceTileEntity.setItem(SMELTABLE_ITEM_IDX, getItem(random, serverWorld, blockPos, smeltableLootTable));
         furnaceTileEntity.setItem(FUEL_ITEM_IDX, getItem(random, serverWorld, blockPos, fuelLootTable));
         furnaceTileEntity.setItem(RESULT_ITEM_IDX, getItem(random, serverWorld, blockPos, resultLootTable));
@@ -86,7 +80,7 @@ public class FurnaceProcessor extends StructureProcessor {
     }
 
 
-    private ItemStack getItem(Random random, ServerWorld serverWorld, BlockPos blockPos, ResourceLocation lootTable){
+    private ItemStack getItem(Random random, ServerLevel serverWorld, BlockPos blockPos, ResourceLocation lootTable){
         ItemStack itemStack = GeneralUtils.generateItemStack(serverWorld, blockPos, lootTable, random);
         if (!itemStack.isEmpty()) {
             return itemStack;
@@ -97,7 +91,7 @@ public class FurnaceProcessor extends StructureProcessor {
 
 
     @Override
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return FURNACES;
     }
 }

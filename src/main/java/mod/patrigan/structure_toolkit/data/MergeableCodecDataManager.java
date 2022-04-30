@@ -32,20 +32,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.resources.ReloadListener;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResource;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 
@@ -56,6 +55,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static net.minecraftforge.fml.LogicalSide.SERVER;
+
 /**
  * Generic data loader for Codec-parsable data.
  * This works best if initialized during your mod's construction.
@@ -64,7 +65,7 @@ import java.util.function.Function;
  * @param <RAW> The type of the objects that the codec is parsing jsons as
  * @param <FINE> The type of the object we get after merging the parsed objects. Can be the same as RAW
  */
-public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<ResourceLocation, FINE>>
+public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReloadListener<Map<ResourceLocation, FINE>>
 {
     protected static final String JSON_EXTENSION = ".json";
     protected static final int JSON_EXTENSION_LENGTH = JSON_EXTENSION.length();
@@ -128,7 +129,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
 
     /** Off-thread processing (can include reading files from hard drive) **/
     @Override
-    protected Map<ResourceLocation, FINE> prepare(final IResourceManager resourceManager, final IProfiler profiler)
+    protected Map<ResourceLocation, FINE> prepare(final ResourceManager resourceManager, final ProfilerFiller profiler)
     {
         final Map<ResourceLocation, List<RAW>> map = Maps.newHashMap();
 
@@ -146,7 +147,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
             // we can query the resource manager for these
             try
             {
-                for (IResource resource : resourceManager.getResources(resourceLocation))
+                for (Resource resource : resourceManager.getResources(resourceLocation))
                 {
                     try // with resources
                             (
@@ -156,7 +157,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
                     {
                         // read the json file and save the parsed object for later
                         // this json element may return null
-                        final JsonElement jsonElement = JSONUtils.fromJson(this.gson, reader, JsonElement.class);
+                        final JsonElement jsonElement = GsonHelper.fromJson(this.gson, reader, JsonElement.class);
                         this.codec.parse(JsonOps.INSTANCE, jsonElement)
                                 // resultOrPartial either returns a non-empty optional or calls the consumer given
                                 .resultOrPartial(MergeableCodecDataManager::throwJsonParseException)
@@ -205,7 +206,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
 
     /** Main-thread processing, runs after prepare concludes **/
     @Override
-    protected void apply(final Map<ResourceLocation, FINE> processedData, final IResourceManager resourceManager, final IProfiler profiler)
+    protected void apply(final Map<ResourceLocation, FINE> processedData, final ResourceManager resourceManager, final ProfilerFiller profiler)
     {
         this.logger.info("Beginning loading of data for data loader: {}", this.folderName);
         // now that we're on the main thread, we can finalize the data
@@ -216,7 +217,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
         boolean isServer = true;
         try
         {
-            LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
+            LogicalSidedProvider.CLIENTWORLD.get(SERVER);
         }
         catch(Exception e)
         {
@@ -253,10 +254,10 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
                                                                                 final Function<Map<ResourceLocation, FINE>, PACKET> packetFactory)
     {
         return event -> {
-            PlayerEntity player = event.getPlayer();
-            if (player instanceof ServerPlayerEntity)
+            Player player = event.getPlayer();
+            if (player instanceof ServerPlayer)
             {
-                channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packetFactory.apply(this.data));
+                channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer)player), packetFactory.apply(this.data));
             }
         };
     }

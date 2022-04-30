@@ -3,14 +3,14 @@ package mod.patrigan.structure_toolkit.world.gen.processors;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +21,6 @@ import static mod.patrigan.structure_toolkit.init.ModProcessors.CEILING_ATTACHME
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
 import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.getBlock;
 import static mod.patrigan.structure_toolkit.world.gen.processors.ProcessorUtil.isSolid;
-import static net.minecraft.block.Blocks.AIR;
 import static net.minecraftforge.registries.ForgeRegistries.BLOCKS;
 
 public class CeilingAttachmentProcessor extends StructureProcessor {
@@ -47,33 +46,33 @@ public class CeilingAttachmentProcessor extends StructureProcessor {
     }
 
     @Override
-    public Template.BlockInfo process(IWorldReader world, BlockPos piecePos, BlockPos structurePos, Template.BlockInfo rawBlockInfo, Template.BlockInfo blockInfo, PlacementSettings settings, Template template) {
+    public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
         Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
-        if(blockstate.getBlock().equals(AIR) && random.nextFloat() <= rarity){
-            List<Template.BlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
+        if(blockstate.isAir() && random.nextFloat() <= rarity){
+            List<StructureTemplate.StructureBlockInfo> pieceBlocks = settings.getRandomPalette(template.palettes, piecePos).blocks();
             if(hasCeiling(pieceBlocks, rawBlockInfo.pos)) {
                 if(needsWall) {
                     if(hasWall(pieceBlocks, rawBlockInfo.pos)){
-                        return new Template.BlockInfo(blockpos, BLOCKS.getValue(block).defaultBlockState(), blockInfo.nbt);
+                        return new StructureTemplate.StructureBlockInfo(blockpos, BLOCKS.getValue(block).defaultBlockState(), blockInfo.nbt);
                     }
                 } else {
-                    return new Template.BlockInfo(blockpos, BLOCKS.getValue(block).defaultBlockState(), blockInfo.nbt);
+                    return new StructureTemplate.StructureBlockInfo(blockpos, BLOCKS.getValue(block).defaultBlockState(), blockInfo.nbt);
                 }
             }
         }
         return blockInfo;
     }
 
-    private boolean hasWall(List<Template.BlockInfo> pieceBlocks, BlockPos pos) {
-        List<Template.BlockInfo> neighbours = getSideNeighboursBlockInfo(pieceBlocks, pos, true);
+    private boolean hasWall(List<StructureTemplate.StructureBlockInfo> pieceBlocks, BlockPos pos) {
+        List<StructureTemplate.StructureBlockInfo> neighbours = getSideNeighboursBlockInfo(pieceBlocks, pos, true);
         long count = neighbours.stream().filter(ProcessorUtil::isSolid).count();
         return count > 0;
     }
 
-    private List<Template.BlockInfo> getSideNeighboursBlockInfo(List<Template.BlockInfo> pieceBlocks, BlockPos pos, boolean diagonal) {
-        List<Template.BlockInfo> neighbours = new ArrayList<>(Arrays.asList(getBlock(pieceBlocks, pos.north()), getBlock(pieceBlocks, pos.south()), getBlock(pieceBlocks, pos.west()), getBlock(pieceBlocks, pos.east())));
+    private List<StructureTemplate.StructureBlockInfo> getSideNeighboursBlockInfo(List<StructureTemplate.StructureBlockInfo> pieceBlocks, BlockPos pos, boolean diagonal) {
+        List<StructureTemplate.StructureBlockInfo> neighbours = new ArrayList<>(Arrays.asList(getBlock(pieceBlocks, pos.north()), getBlock(pieceBlocks, pos.south()), getBlock(pieceBlocks, pos.west()), getBlock(pieceBlocks, pos.east())));
         if(diagonal){
             neighbours.addAll(Arrays.asList(
                     getBlock(pieceBlocks, pos.north().east()),
@@ -85,11 +84,11 @@ public class CeilingAttachmentProcessor extends StructureProcessor {
         return neighbours;
     }
 
-    private boolean hasCeiling(List<Template.BlockInfo> pieceBlocks, BlockPos pos) {
+    private boolean hasCeiling(List<StructureTemplate.StructureBlockInfo> pieceBlocks, BlockPos pos) {
         return isSolid(getBlock(pieceBlocks, pos.above()));
     }
 
-    protected IStructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return CEILING_ATTACHMENT;
     }
 }
