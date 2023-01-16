@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -27,6 +28,8 @@ import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
 import static net.minecraft.tags.ItemTags.LECTERN_BOOKS;
 import static net.minecraft.world.level.block.LecternBlock.HAS_BOOK;
 import static net.minecraft.world.level.block.LecternBlock.POWERED;
+import static net.minecraftforge.registries.ForgeRegistries.BLOCKS;
+import static net.minecraftforge.registries.ForgeRegistries.ITEMS;
 
 public class LecternProcessor extends StructureProcessor {
 
@@ -74,13 +77,13 @@ public class LecternProcessor extends StructureProcessor {
         CompoundTag nbt = blockInfo.nbt;
         lecternTileEntity.load(nbt);
         lecternTileEntity.setBook(itemStack.split(1));
-        return lecternTileEntity.save(nbt);
+        return lecternTileEntity.saveWithId();
     }
 
 
     private ItemStack getItem(Random random, ServerLevel serverWorld, BlockPos blockPos, ResourceLocation lootTable){
         ItemStack itemStack = GeneralUtils.generateItemStack(serverWorld, blockPos, lootTable, random);
-        if (!itemStack.isEmpty() && itemStack.getItem().getTags().contains(LECTERN_BOOKS.getName())) {
+        if (!itemStack.isEmpty() && ITEMS.tags().getTag(LECTERN_BOOKS).contains(itemStack.getItem())) {
             return itemStack;
         }else{
             return ItemStack.EMPTY;

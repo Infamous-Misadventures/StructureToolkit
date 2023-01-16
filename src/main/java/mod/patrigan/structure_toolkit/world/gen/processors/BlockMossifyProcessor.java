@@ -14,6 +14,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Random;
 
@@ -49,11 +50,11 @@ public class BlockMossifyProcessor extends StructureProcessor {
             newBlock = BLOCKS.getValue(new ResourceLocation(MOD_ID, "mossy_" + blockstate.getBlock().getRegistryName().getPath()));
         }
         if(newBlock != null && !newBlock.defaultBlockState().isAir() && random.nextFloat() < mossiness){
-            if (newBlock.getTags().contains(BlockTags.STAIRS.getName())) {
+            if (BLOCKS.tags().getTag(BlockTags.STAIRS).contains(newBlock)) {
                 blockstate1 = ProcessorUtil.copyStairsState(blockstate, newBlock);
-            } else if (newBlock.getTags().contains(BlockTags.SLABS.getName())) {
+            } else if (BLOCKS.tags().getTag(BlockTags.SLABS).contains(newBlock)) {
                 blockstate1 = ProcessorUtil.copySlabState(blockstate, newBlock);
-            } else if (newBlock.getTags().contains(BlockTags.WALLS.getName())) {
+            } else if (BLOCKS.tags().getTag(BlockTags.WALLS).contains(newBlock)) {
                 blockstate1 = ProcessorUtil.copyWallState(blockstate, newBlock);
             }else if (blockstate.getBlock().equals(Blocks.COBBLESTONE) || blockstate.getBlock().equals(Blocks.STONE_BRICKS)){
                 blockstate1 = newBlock.defaultBlockState();

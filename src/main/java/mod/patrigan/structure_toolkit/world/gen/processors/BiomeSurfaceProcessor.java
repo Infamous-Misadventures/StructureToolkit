@@ -32,7 +32,7 @@ public class BiomeSurfaceProcessor extends StructureProcessor {
     private Biome getCachedBiome(LevelReader worldView, BlockPos structurePos) {
         Map<Long, Biome> worldSpecificBiomes = MINI_BIOMEPOS_CACHE.computeIfAbsent(worldView, (keyPos) -> new HashMap<>());
         BlockPos biomePos = new BlockPos(structurePos.getX() >> 2, 0, structurePos.getZ() >> 2);
-        Biome biome = worldSpecificBiomes.computeIfAbsent(biomePos.asLong(), (keyPos) -> worldView.getBiome(structurePos));
+        Biome biome = worldSpecificBiomes.computeIfAbsent(biomePos.asLong(), (keyPos) -> worldView.getBiome(structurePos).value());
         if(worldSpecificBiomes.size() > 20) worldSpecificBiomes.clear();
         return biome;
     }

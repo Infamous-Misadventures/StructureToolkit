@@ -1,6 +1,7 @@
 package mod.patrigan.structure_toolkit.world.gen.processors;
 
 import mod.patrigan.structure_toolkit.util.RandomType;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.tags.Tag;
@@ -27,6 +28,7 @@ import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class ProcessorUtil {
     public static final String NBT_FINAL_STATE = "final_state";
@@ -49,8 +51,8 @@ public class ProcessorUtil {
         return pos == null ? Util.getMillis() + processorSeed : Mth.getSeed(pos) + processorSeed;
     }
 
-    public static Block getRandomBlockFromTag(Tag<Block> tag, Random random, List<ResourceLocation> exclusionList){
-        List<Block> resultList = tag.getValues().stream().filter(block -> !exclusionList.contains(block.getRegistryName())).collect(Collectors.toList());
+    public static Block getRandomBlockFromTag(TagKey<Block> tagKey, Random random, List<ResourceLocation> exclusionList){
+        List<Block> resultList = BLOCKS.tags().getTag(tagKey).stream().filter(block -> !exclusionList.contains(block.getRegistryName())).collect(Collectors.toList());
         return resultList.get(random.nextInt(resultList.size()));
     }
 

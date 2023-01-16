@@ -69,11 +69,11 @@ public class GradientReplaceProcessor extends StructureProcessor {
             return blockInfo;
         }
 
-        if (blockstate.getBlock().getTags().contains(BlockTags.STAIRS.getName())) {
+        if (BLOCKS.tags().getTag(BlockTags.STAIRS).contains(blockstate.getBlock())) {
             return new StructureTemplate.StructureBlockInfo(blockPos, ProcessorUtil.copyStairsState(blockstate, newBlock), blockInfo.nbt);
-        } else if (blockstate.getBlock().getTags().contains(BlockTags.SLABS.getName())) {
+        } else if (BLOCKS.tags().getTag(BlockTags.SLABS).contains(blockstate.getBlock())) {
             return new StructureTemplate.StructureBlockInfo(blockPos, ProcessorUtil.copySlabState(blockstate, newBlock), blockInfo.nbt);
-        } else if (blockstate.getBlock().getTags().contains(BlockTags.WALLS.getName())) {
+        } else if (BLOCKS.tags().getTag(BlockTags.WALLS).contains(blockstate.getBlock())) {
             return new StructureTemplate.StructureBlockInfo(blockPos, ProcessorUtil.copyWallState(blockstate, newBlock), blockInfo.nbt);
         }else{
             return new StructureTemplate.StructureBlockInfo(blockPos, newBlock.defaultBlockState(), blockInfo.nbt);

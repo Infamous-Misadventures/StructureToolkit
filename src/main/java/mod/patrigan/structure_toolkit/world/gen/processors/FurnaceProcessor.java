@@ -76,7 +76,7 @@ public class FurnaceProcessor extends StructureProcessor {
         furnaceTileEntity.setItem(SMELTABLE_ITEM_IDX, getItem(random, serverWorld, blockPos, smeltableLootTable));
         furnaceTileEntity.setItem(FUEL_ITEM_IDX, getItem(random, serverWorld, blockPos, fuelLootTable));
         furnaceTileEntity.setItem(RESULT_ITEM_IDX, getItem(random, serverWorld, blockPos, resultLootTable));
-        return furnaceTileEntity.save(nbt);
+        return furnaceTileEntity.saveWithId();
     }
 
 

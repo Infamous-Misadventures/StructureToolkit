@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.patrigan.structure_toolkit.init.ModProcessors;
 import mod.patrigan.structure_toolkit.util.RandomType;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.FlowerPotBlock;
@@ -14,6 +15,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.Random;
@@ -23,6 +25,7 @@ import static java.util.Collections.emptyList;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
 import static net.minecraft.tags.BlockTags.*;
 import static net.minecraft.world.level.block.Blocks.FLOWER_POT;
+import static net.minecraftforge.registries.ForgeRegistries.BLOCKS;
 
 public class FlowerPotProcessor extends StructureProcessor {
     public static final Codec<FlowerPotProcessor> CODEC = RecordCodecBuilder.create(builder ->
@@ -51,7 +54,7 @@ public class FlowerPotProcessor extends StructureProcessor {
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
         if(blockstate.getBlock().equals(FLOWER_POT)){
-            List<Block> flowerPotList = FLOWER_POTS.getValues().stream().filter(this::flowerPotFilter).collect(Collectors.toList());
+            List<Block> flowerPotList = ForgeRegistries.BLOCKS.tags().getTag(FLOWER_POTS).stream().filter(this::flowerPotFilter).collect(Collectors.toList());
             return new StructureTemplate.StructureBlockInfo(blockpos, flowerPotList.get(random.nextInt(flowerPotList.size())).defaultBlockState(), blockInfo.nbt);
         }
         return blockInfo;
@@ -63,10 +66,10 @@ public class FlowerPotProcessor extends StructureProcessor {
         }
         FlowerPotBlock flowerPotBlock = (FlowerPotBlock) block;
         Block content = flowerPotBlock.getContent();
-        if(includeSaplings && content.getTags().contains(SAPLINGS.getName()) && !exclusionList.contains(content.getRegistryName())){
+        if(includeSaplings && BLOCKS.tags().getTag(SAPLINGS).contains(content) && !exclusionList.contains(content.getRegistryName())){
             return true;
         }
-        if(includeFlowers && content.getTags().contains(FLOWERS.getName()) && !exclusionList.contains(content.getRegistryName())){
+        if(includeFlowers && BLOCKS.tags().getTag(FLOWERS).contains(content) && !exclusionList.contains(content.getRegistryName())){
             return true;
         }
         if(content.defaultBlockState().isAir() && !exclusionList.contains(content.getRegistryName())){
