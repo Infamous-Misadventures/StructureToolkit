@@ -41,7 +41,7 @@ public class ModLanguageProvider extends LanguageProvider {
     }
 
     private void addEntity(String entityId) {
-        EntityType<?> entityType = ENTITIES.getValue(new ResourceLocation(StructureToolkit.MOD_ID, entityId));
+        EntityType<?> entityType = ENTITY_TYPES.getValue(new ResourceLocation(StructureToolkit.MOD_ID, entityId));
         add(entityType, getNameFromId(entityId));
         String entitySpawnEggItem = entityId + "_spawn_egg";
         Item spawnEgg = ITEMS.getValue(new ResourceLocation(StructureToolkit.MOD_ID, entitySpawnEggItem));

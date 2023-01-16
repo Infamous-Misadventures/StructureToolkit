@@ -19,7 +19,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-import java.util.Random;
+import net.minecraft.util.RandomSource;
 
 import static mod.patrigan.structure_toolkit.init.ModProcessors.FURNACES;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
@@ -57,7 +57,7 @@ public class FurnaceProcessor extends StructureProcessor {
                 AbstractFurnaceBlockEntity furnaceBlockEntity = (AbstractFurnaceBlockEntity) blockEntity;
                 ServerLevel serverWorld = ((ServerLevelAccessor) world).getLevel();
                 serverWorld.setBlockEntity(furnaceBlockEntity);
-                Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
+                RandomSource random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
                 return new StructureTemplate.StructureBlockInfo(
                         blockInfo.pos,
                         blockInfo.state,
@@ -70,7 +70,7 @@ public class FurnaceProcessor extends StructureProcessor {
     /**
      * Makes the given block entity now have the loottable items
      */
-    private CompoundTag setAbstractFurnaceEntity(Random random, ServerLevel serverWorld, BlockPos blockPos, StructureTemplate.StructureBlockInfo blockInfo, AbstractFurnaceBlockEntity furnaceTileEntity) {
+    private CompoundTag setAbstractFurnaceEntity(RandomSource random, ServerLevel serverWorld, BlockPos blockPos, StructureTemplate.StructureBlockInfo blockInfo, AbstractFurnaceBlockEntity furnaceTileEntity) {
         CompoundTag nbt = blockInfo.nbt;
         furnaceTileEntity.load(nbt);
         furnaceTileEntity.setItem(SMELTABLE_ITEM_IDX, getItem(random, serverWorld, blockPos, smeltableLootTable));
@@ -80,7 +80,7 @@ public class FurnaceProcessor extends StructureProcessor {
     }
 
 
-    private ItemStack getItem(Random random, ServerLevel serverWorld, BlockPos blockPos, ResourceLocation lootTable){
+    private ItemStack getItem(RandomSource random, ServerLevel serverWorld, BlockPos blockPos, ResourceLocation lootTable){
         ItemStack itemStack = GeneralUtils.generateItemStack(serverWorld, blockPos, lootTable, random);
         if (!itemStack.isEmpty()) {
             return itemStack;

@@ -2,9 +2,9 @@ package mod.patrigan.structure_toolkit.datagen;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,14 +19,10 @@ public class DataGenerators {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
-        if (event.includeClient()) {
-            generator.addProvider(new ModLanguageProvider(generator, "en_us"));
-        }
-        if (event.includeServer()) {
-            ModBlockTagsProvider modBlockTagsProvider = new ModBlockTagsProvider(generator, event.getExistingFileHelper());
-            generator.addProvider(modBlockTagsProvider);
-            generator.addProvider(new ModEntityTypeTagsProvider(generator, event.getExistingFileHelper()));
-            generator.addProvider(new ModChestLootTablesProvider(generator));
-        }
+        generator.addProvider(event.includeClient(), new ModLanguageProvider(generator, "en_us"));
+        ModBlockTagsProvider modBlockTagsProvider = new ModBlockTagsProvider(generator, event.getExistingFileHelper());
+        generator.addProvider(event.includeServer(), modBlockTagsProvider);
+        generator.addProvider(event.includeServer(), new ModEntityTypeTagsProvider(generator, event.getExistingFileHelper()));
+        generator.addProvider(event.includeServer(), new ModChestLootTablesProvider(generator));
     }
 }

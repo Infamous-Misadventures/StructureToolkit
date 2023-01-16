@@ -1,5 +1,6 @@
 package mod.patrigan.structure_toolkit.util;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -11,12 +12,12 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.level.ServerLevel;
 
 import java.util.List;
-import java.util.Random;
+import net.minecraft.util.RandomSource;
 
 public class GeneralUtils {
 
     // Weighted Random from: https://stackoverflow.com/a/6737362
-    public static <T> T getRandomEntry(List<Pair<T, Integer>> rlList, Random random) {
+    public static <T> T getRandomEntry(List<Pair<T, Integer>> rlList, RandomSource random) {
         double totalWeight = 0.0;
 
         // Compute the total weight of all items together.
@@ -36,7 +37,7 @@ public class GeneralUtils {
 
 
 
-    public static ItemStack generateItemStack(ServerLevel world, BlockPos pos, ResourceLocation lootTable, Random random)
+    public static ItemStack generateItemStack(ServerLevel world, BlockPos pos, ResourceLocation lootTable, RandomSource random)
     {
         LootContext context = new LootContext.Builder(world)
                 .withRandom(random)

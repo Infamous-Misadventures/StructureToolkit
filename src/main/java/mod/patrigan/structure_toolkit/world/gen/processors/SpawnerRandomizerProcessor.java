@@ -20,7 +20,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.List;
-import java.util.Random;
+import net.minecraft.util.RandomSource;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -67,7 +67,7 @@ public class SpawnerRandomizerProcessor extends StructureProcessor {
     @Override
     public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
         if (blockInfo.state.getBlock() instanceof SpawnerBlock) {
-            Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
+            RandomSource random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
             return new StructureTemplate.StructureBlockInfo(
                     blockInfo.pos,
                     blockInfo.state,
@@ -79,7 +79,7 @@ public class SpawnerRandomizerProcessor extends StructureProcessor {
     /**
      * Makes the given block entity now have the correct spawner mob
      */
-    private CompoundTag setMobSpawnerEntity(Random random, CompoundTag nbt) {
+    private CompoundTag setMobSpawnerEntity(RandomSource random, CompoundTag nbt) {
         EntityType<?> entity = GeneralUtils.getRandomEntry(entityWeightMap, random);
         if (entity != null) {
             CompoundTag compound = new CompoundTag();

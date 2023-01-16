@@ -15,6 +15,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ public class GradientReplaceProcessor extends StructureProcessor {
 
         BlockState blockstate = blockInfo.state;
         BlockPos blockPos = blockInfo.pos;
-        if(!blockstate.getBlock().getRegistryName().getPath().equals(toReplace.getPath())){
+        if(!ForgeRegistries.BLOCKS.getKey(blockstate.getBlock()).getPath().equals(toReplace.getPath())){
             return blockInfo;
         }
 

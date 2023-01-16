@@ -18,7 +18,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
-import java.util.Random;
+import net.minecraft.util.RandomSource;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -50,7 +50,7 @@ public class FlowerPotProcessor extends StructureProcessor {
 
     @Override
     public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
-        Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
+        RandomSource random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
         if(blockstate.getBlock().equals(FLOWER_POT)){
@@ -66,13 +66,13 @@ public class FlowerPotProcessor extends StructureProcessor {
         }
         FlowerPotBlock flowerPotBlock = (FlowerPotBlock) block;
         Block content = flowerPotBlock.getContent();
-        if(includeSaplings && BLOCKS.tags().getTag(SAPLINGS).contains(content) && !exclusionList.contains(content.getRegistryName())){
+        if(includeSaplings && BLOCKS.tags().getTag(SAPLINGS).contains(content) && !exclusionList.contains(ForgeRegistries.BLOCKS.getKey(content))){
             return true;
         }
-        if(includeFlowers && BLOCKS.tags().getTag(FLOWERS).contains(content) && !exclusionList.contains(content.getRegistryName())){
+        if(includeFlowers && BLOCKS.tags().getTag(FLOWERS).contains(content) && !exclusionList.contains(ForgeRegistries.BLOCKS.getKey(content))){
             return true;
         }
-        if(content.defaultBlockState().isAir() && !exclusionList.contains(content.getRegistryName())){
+        if(content.defaultBlockState().isAir() && !exclusionList.contains(ForgeRegistries.BLOCKS.getKey(content))){
             return true;
         }
         return false;

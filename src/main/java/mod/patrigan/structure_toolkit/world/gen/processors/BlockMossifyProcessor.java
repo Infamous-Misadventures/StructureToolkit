@@ -16,7 +16,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Random;
+import net.minecraft.util.RandomSource;
 
 import static mod.patrigan.structure_toolkit.StructureToolkit.MOD_ID;
 import static mod.patrigan.structure_toolkit.init.ModProcessors.BLOCK_MOSSIFY;
@@ -41,13 +41,13 @@ public class BlockMossifyProcessor extends StructureProcessor {
 
     @Override
     public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos piecePos, BlockPos structurePos, StructureTemplate.StructureBlockInfo rawBlockInfo, StructureTemplate.StructureBlockInfo blockInfo, StructurePlaceSettings settings, StructureTemplate template) {
-        Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
+        RandomSource random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
         BlockState blockstate = blockInfo.state;
         BlockPos blockpos = blockInfo.pos;
         BlockState blockstate1 = null;
-        Block newBlock = BLOCKS.getValue(new ResourceLocation("mossy_" + blockstate.getBlock().getRegistryName().getPath()));
+        Block newBlock = BLOCKS.getValue(new ResourceLocation("mossy_" + ForgeRegistries.BLOCKS.getKey(blockstate.getBlock()).getPath()));
         if(newBlock == null || newBlock.defaultBlockState().isAir() ){
-            newBlock = BLOCKS.getValue(new ResourceLocation(MOD_ID, "mossy_" + blockstate.getBlock().getRegistryName().getPath()));
+            newBlock = BLOCKS.getValue(new ResourceLocation(MOD_ID, "mossy_" + ForgeRegistries.BLOCKS.getKey(blockstate.getBlock()).getPath()));
         }
         if(newBlock != null && !newBlock.defaultBlockState().isAir() && random.nextFloat() < mossiness){
             if (BLOCKS.tags().getTag(BlockTags.STAIRS).contains(newBlock)) {

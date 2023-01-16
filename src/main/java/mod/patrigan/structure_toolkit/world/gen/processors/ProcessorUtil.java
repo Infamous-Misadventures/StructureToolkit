@@ -1,40 +1,34 @@
 package mod.patrigan.structure_toolkit.world.gen.processors;
 
 import mod.patrigan.structure_toolkit.util.RandomType;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.tags.Tag;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static net.minecraft.world.level.block.Blocks.*;
 import static net.minecraftforge.registries.ForgeRegistries.BLOCKS;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
-import net.minecraft.world.level.block.WallBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
-
 public class ProcessorUtil {
     public static final String NBT_FINAL_STATE = "final_state";
 
-    public static Random getRandom(RandomType type, BlockPos blockPos, BlockPos piecePos, BlockPos structurePos, LevelReader world, long processorSeed){
-        return new Random(getRandomSeed(type, blockPos, piecePos, structurePos, world, processorSeed));
+    public static RandomSource getRandom(RandomType type, BlockPos blockPos, BlockPos piecePos, BlockPos structurePos, LevelReader world, long processorSeed){
+        return RandomSource.create(getRandomSeed(type, blockPos, piecePos, structurePos, world, processorSeed));
     }
 
     public static long getRandomSeed(RandomType type, BlockPos blockPos, BlockPos piecePos, BlockPos structurePos, LevelReader world, long processorSeed){
@@ -51,13 +45,13 @@ public class ProcessorUtil {
         return pos == null ? Util.getMillis() + processorSeed : Mth.getSeed(pos) + processorSeed;
     }
 
-    public static Block getRandomBlockFromTag(TagKey<Block> tagKey, Random random, List<ResourceLocation> exclusionList){
-        List<Block> resultList = BLOCKS.tags().getTag(tagKey).stream().filter(block -> !exclusionList.contains(block.getRegistryName())).collect(Collectors.toList());
+    public static Block getRandomBlockFromTag(TagKey<Block> tagKey, RandomSource random, List<ResourceLocation> exclusionList){
+        List<Block> resultList = BLOCKS.tags().getTag(tagKey).stream().filter(block -> !exclusionList.contains(ForgeRegistries.BLOCKS.getKey(block))).collect(Collectors.toList());
         return resultList.get(random.nextInt(resultList.size()));
     }
 
-    public static Item getRandomItemFromTag(Tag<Item> tag, Random random, List<ResourceLocation> exclusionList){
-        List<Item> resultList = tag.getValues().stream().filter(item -> !exclusionList.contains(item.getRegistryName())).collect(Collectors.toList());
+    public static Item getRandomItemFromTag(TagKey<Item> tag, RandomSource random, List<ResourceLocation> exclusionList){
+        List<Item> resultList = ForgeRegistries.ITEMS.tags().getTag(tag).stream().filter(item -> !exclusionList.contains(ForgeRegistries.ITEMS.getKey(item))).collect(Collectors.toList());
         return resultList.get(random.nextInt(resultList.size()));
     }
 

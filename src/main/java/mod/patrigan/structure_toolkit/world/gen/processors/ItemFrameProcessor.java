@@ -18,8 +18,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Random;
+import net.minecraft.util.RandomSource;
 
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
 
@@ -48,11 +49,11 @@ public class ItemFrameProcessor extends StructureProcessor {
 
     @Override
     public StructureTemplate.StructureEntityInfo processEntity(LevelReader world, BlockPos structurePos, StructureTemplate.StructureEntityInfo rawEntityInfo, StructureTemplate.StructureEntityInfo entityInfo, StructurePlaceSettings placementSettings, StructureTemplate template) {
-        Random random = ProcessorUtil.getRandom(randomType, entityInfo.blockPos, BlockPos.ZERO, structurePos, world, SEED);
+        RandomSource random = ProcessorUtil.getRandom(randomType, entityInfo.blockPos, BlockPos.ZERO, structurePos, world, SEED);
         Vec3 pos = entityInfo.pos;
         BlockPos blockPos = entityInfo.blockPos;
         CompoundTag nbt = entityInfo.nbt;
-        if(nbt.getString("id").equals(EntityType.ITEM_FRAME.getRegistryName().toString())){
+        if(nbt.getString("id").equals(ForgeRegistries.ENTITY_TYPES.getKey(EntityType.ITEM_FRAME).toString())){
             ItemStack itemStack = getItemStack(random, world, blockPos);
             nbt.put("Item", itemStack.save(new CompoundTag()));
             nbt.putBoolean("Invisible", invisible);
@@ -64,7 +65,7 @@ public class ItemFrameProcessor extends StructureProcessor {
         return entityInfo;
     }
 
-    private ItemStack getItemStack(Random random, LevelReader world, BlockPos blockPos) {
+    private ItemStack getItemStack(RandomSource random, LevelReader world, BlockPos blockPos) {
         ServerLevel serverWorld = ((ServerLevelAccessor)world).getLevel();
         return GeneralUtils.generateItemStack(serverWorld, blockPos, lootTable, random);
     }

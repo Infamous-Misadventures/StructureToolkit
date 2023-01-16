@@ -21,7 +21,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-import java.util.Random;
+import net.minecraft.util.RandomSource;
 
 import static mod.patrigan.structure_toolkit.init.ModProcessors.LECTERNS;
 import static mod.patrigan.structure_toolkit.util.RandomType.RANDOM_TYPE_CODEC;
@@ -52,7 +52,7 @@ public class LecternProcessor extends StructureProcessor {
         if (blockInfo.state.getBlock() instanceof LecternBlock && blockInfo.state.hasBlockEntity()) {
             BlockEntity blockEntity = ((LecternBlock) blockInfo.state.getBlock()).newBlockEntity(blockInfo.pos, blockInfo.state);
             if(blockEntity instanceof LecternBlockEntity) {
-                Random random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
+                RandomSource random = ProcessorUtil.getRandom(randomType, blockInfo.pos, piecePos, structurePos, world, SEED);
                 ServerLevel serverWorld = ((ServerLevelAccessor) world).getLevel();
                 ItemStack itemStack = getItem(random, serverWorld, blockInfo.pos, lootTable);
                 if(!itemStack.isEmpty()){
@@ -81,7 +81,7 @@ public class LecternProcessor extends StructureProcessor {
     }
 
 
-    private ItemStack getItem(Random random, ServerLevel serverWorld, BlockPos blockPos, ResourceLocation lootTable){
+    private ItemStack getItem(RandomSource random, ServerLevel serverWorld, BlockPos blockPos, ResourceLocation lootTable){
         ItemStack itemStack = GeneralUtils.generateItemStack(serverWorld, blockPos, lootTable, random);
         if (!itemStack.isEmpty() && ITEMS.tags().getTag(LECTERN_BOOKS).contains(itemStack.getItem())) {
             return itemStack;
